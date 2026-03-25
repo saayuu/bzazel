@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bzazel">
+<meta name="theme-color" content="#2c2620">
+<link rel="manifest" href="manifest.json">
+<title>Bzazel</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4efe6;
+  --card: #faf7f2;
+  --border: #e2d9cc;
+  --text: #2c2620;
+  --muted: #8a7f74;
+  --fire: #c0392b;
+  --fire-bg: #fdf0ee;
+  --fire-border: #e8b4ae;
+  --soon: #b8660a;
+  --soon-bg: #fdf4e7;
+  --soon-border: #f0d4a0;
+  --upcoming: #5a7a3a;
+  --upcoming-bg: #f0f5eb;
+  --upcoming-border: #c4d9b0;
+  --ongoing: #2e6da4;
+  --ongoing-bg: #edf4fc;
+  --ongoing-border: #a8c8e8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg); font-family: 'Instrument Sans', -apple-system, sans-serif; color: var(--text); min-height: 100vh; padding-bottom: 48px; }
+
+.header { background: var(--card); border-bottom: 1px solid var(--border); padding: 20px 16px 0; position: sticky; top: 0; z-index: 100; }
+.header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.htitle { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.3px; }
+.hsub { font-size: 10px; color: var(--muted); margin-top: 3px; letter-spacing: 0.06em; text-transform: uppercase; }
+.pnum { font-size: 24px; font-weight: 600; color: var(--text); line-height: 1; text-align: right; }
+.plabel { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; text-align: right; }
+.pbar-wrap { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 12px; overflow: hidden; }
+.pbar-fill { height: 100%; background: linear-gradient(90deg,#8B7355,#b89a6e); border-radius: 2px; transition: width 0.5s ease; }
+.chips { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 12px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex-shrink: 0; border-radius: 20px; padding: 5px 11px; font-size: 11px; font-weight: 500; white-space: nowrap; font-family: inherit; }
+.chip.dark { background: var(--text); color: #f4efe6; }
+.chip.red { background: var(--fire); color: white; }
+.chip.orange { background: var(--soon); color: white; }
+.chip.light { background: var(--border); color: var(--text); }
+
+.filters { display: flex; gap: 6px; overflow-x: auto; padding: 10px 16px; scrollbar-width: none; background: var(--card); border-bottom: 1px solid var(--border); }
+.filters::-webkit-scrollbar { display: none; }
+.fbtn { flex-shrink: 0; border: 1px solid var(--border); background: var(--bg); color: var(--muted); border-radius: 20px; padding: 5px 11px; font-size: 11px; font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.12s; }
+.fbtn.active { background: var(--text); color: #f4efe6; border-color: var(--text); }
+
+.content { padding: 12px 16px 0; }
+
+.fire-zone { background: var(--fire-bg); border: 1px solid var(--fire-border); border-radius: 12px; padding: 13px; margin-bottom: 14px; }
+.fz-title { font-size: 11px; font-weight: 600; color: var(--fire); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.fi { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--fire-border); cursor: pointer; }
+.fi:last-child { border-bottom: none; padding-bottom: 0; }
+.fi-chk { width: 17px; height: 17px; border: 1.5px solid var(--fire-border); border-radius: 4px; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; background: white; transition: all 0.12s; }
+.fi-chk.on { background: var(--fire); border-color: var(--fire); }
+.fi-t { font-size: 13px; font-weight: 500; color: var(--fire); line-height: 1.3; margin-bottom: 2px; }
+.fi-t.dn { color: #c0a09a; text-decoration: line-through; }
+.fi-s { font-size: 11px; color: #b07060; }
+
+.sec { margin-bottom: 4px; }
+.sec-hdr { display: flex; align-items: center; justify-content: space-between; padding: 11px 0 7px; cursor: pointer; border-top: 1px solid var(--border); }
+.sec-l { display: flex; align-items: center; gap: 8px; }
+.sec-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.sec-name { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+.sec-ct { font-size: 11px; color: var(--muted); }
+.sec-tog { font-size: 18px; color: var(--muted); font-weight: 300; line-height: 1; }
+
+.tcard { background: var(--card); border-radius: 10px; border-left: 3px solid var(--border); margin-bottom: 5px; overflow: hidden; }
+.tcard.fire { border-left-color: var(--fire); }
+.tcard.soon { border-left-color: var(--soon); }
+.tcard.upcoming { border-left-color: var(--upcoming); }
+.tcard.ongoing { border-left-color: var(--ongoing); }
+.tcard.done { opacity: 0.55; border-left-color: var(--border); }
+
+.tmain { display: flex; align-items: flex-start; gap: 11px; padding: 11px 11px 9px; cursor: pointer; }
+.tchk { width: 17px; height: 17px; border-radius: 4px; flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.12s; border: 1.5px solid var(--border); background: white; }
+.tchk.fire { border-color: var(--fire-border); }
+.tchk.soon { border-color: var(--soon-border); }
+.tchk.upcoming { border-color: var(--upcoming-border); }
+.tchk.ongoing { border-color: var(--ongoing-border); }
+.tchk.cfire { background: var(--fire); border-color: var(--fire); }
+.tchk.csoon { background: var(--soon); border-color: var(--soon); }
+.tchk.cupcoming { background: var(--upcoming); border-color: var(--upcoming); }
+.tchk.congoing { background: var(--ongoing); border-color: var(--ongoing); }
+.tchk.cnone { background: var(--muted); border-color: var(--muted); }
+
+.tbody { flex: 1; min-width: 0; }
+.ttitle { font-size: 13px; font-weight: 500; line-height: 1.35; margin-bottom: 4px; }
+.ttitle.dn { color: #b0a89e; text-decoration: line-through; }
+.tmeta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.tdl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 6px; border-radius: 4px; }
+.tdl.fire { color: var(--fire); background: var(--fire-bg); }
+.tdl.soon { color: var(--soon); background: var(--soon-bg); }
+.tdl.upcoming { color: var(--upcoming); background: var(--upcoming-bg); }
+.tdl.ongoing { color: var(--ongoing); background: var(--ongoing-bg); }
+.tdl.neutral { color: var(--muted); background: var(--bg); }
+.morebtnn { font-size: 10px; color: var(--muted); padding: 2px 7px; border-radius: 4px; background: var(--bg); border: none; font-family: inherit; cursor: pointer; }
+.tdetail { display: none; padding: 9px 11px 11px 39px; font-size: 12px; color: var(--muted); line-height: 1.65; border-top: 1px solid var(--border); }
+.tdetail.open { display: block; }
+.tdetail a { color: var(--ongoing); word-break: break-all; }
+.tdetail ul { padding-left: 14px; margin-top: 4px; }
+.tdetail li { margin-bottom: 4px; }
+.have { color: var(--upcoming); font-weight: 600; }
+.need { color: var(--fire); font-weight: 600; }
+.note { color: var(--soon); font-weight: 600; }
+.ck { width: 10px; height: 8px; fill: none; stroke: white; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* TOAST POPUP */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--text); color: #f4efe6; border-radius: 20px;
+  padding: 10px 18px; font-size: 13px; font-weight: 500;
+  max-width: 88vw; text-align: center; z-index: 999;
+  opacity: 0; transition: all 0.3s ease; pointer-events: none;
+  box-shadow: 0 4px 20px rgba(44,38,32,0.25);
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* VIBE BAR */
+.vibe-bar {
+  background: var(--card); border-bottom: 1px solid var(--border);
+  padding: 9px 16px; display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; cursor: pointer;
+}
+.vibe-text { font-size: 12px; color: var(--text); flex: 1; line-height: 1.4; }
+.vibe-tap { font-size: 10px; color: var(--muted); flex-shrink: 0; }
+
+/* SYMBOL BAR */
+.sym-bar {
+  background: var(--card); border-bottom: 1px solid var(--border);
+  padding: 8px 16px; display: flex; align-items: center; gap: 6px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.sym-bar::-webkit-scrollbar { display: none; }
+.sym { font-size: 17px; }
+.big-countdown {
+  background: var(--text); color: #f4efe6; border-radius: 10px;
+  padding: 12px 14px; margin: 12px 16px 0; display: flex;
+  align-items: center; justify-content: space-between;
+}
+.bcd-left { }
+.bcd-days { font-size: 32px; font-weight: 600; line-height: 1; }
+.bcd-label { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+.bcd-right { font-size: 22px; }
+.bcd-caption { font-size: 11px; opacity: 0.75; margin-top: 6px; line-height: 1.4; }
+
+/* BOOBY */
+.booby-logo { width: 32px; height: 32px; cursor: pointer; flex-shrink: 0; }
+
+/* EASTER EGG OVERLAY */
+.egg-overlay {
+  position: fixed; inset: 0; background: rgba(44,38,32,0.92);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; padding: 32px; opacity: 0;
+  transition: opacity 0.4s; pointer-events: none;
+}
+.egg-overlay.show { opacity: 1; pointer-events: all; }
+.egg-box {
+  background: #f4efe6; border-radius: 16px; padding: 28px 24px;
+  max-width: 340px; text-align: center;
+}
+.egg-icon { font-size: 36px; margin-bottom: 12px; }
+.egg-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; margin-bottom: 10px; color: var(--text); }
+.egg-msg { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 20px; }
+.egg-close { background: var(--text); color: #f4efe6; border: none; border-radius: 20px; padding: 8px 20px; font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; }
+
+/* MILESTONE BANNER */
+.milestone {
+  position: fixed; top: -80px; left: 50%; transform: translateX(-50%);
+  background: var(--text); color: #f4efe6; border-radius: 12px;
+  padding: 12px 20px; font-size: 13px; font-weight: 500;
+  z-index: 998; transition: top 0.4s ease; white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(44,38,32,0.3); text-align: center;
+  max-width: 90vw; white-space: normal;
+}
+.milestone.show { top: 16px; }
+
+/* NOTIF BUTTON */
+.notif-bar {
+  background: var(--upcoming-bg); border-bottom: 1px solid var(--upcoming-border);
+  padding: 8px 16px; display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+}
+.notif-bar-text { font-size: 11px; color: var(--upcoming); flex: 1; }
+.notif-btn { background: var(--upcoming); color: white; border: none; border-radius: 20px; padding: 5px 12px; font-size: 11px; font-weight: 500; font-family: inherit; cursor: pointer; flex-shrink: 0; }
+.notif-btn.denied { background: var(--muted); cursor: default; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div style="display:flex;align-items:center;gap:10px">
+      <!-- BOOBY BIRD LOGO -->
+      <svg class="booby-logo" id="boobyBtn" viewBox="0 0 32 32" onclick="boobyTap()">
+        <!-- body -->
+        <ellipse cx="16" cy="17" rx="8" ry="9" fill="#f0ede0" stroke="#c8b89a" stroke-width="1"/>
+        <!-- head -->
+        <ellipse cx="16" cy="9" rx="5" ry="4.5" fill="#f0ede0" stroke="#c8b89a" stroke-width="1"/>
+        <!-- beak -->
+        <polygon points="16,8 21,9.5 16,11" fill="#d4a820"/>
+        <!-- eye -->
+        <circle cx="18" cy="9" r="1.2" fill="#2c2620"/>
+        <circle cx="18.4" cy="8.7" r="0.4" fill="white"/>
+        <!-- wing detail -->
+        <ellipse cx="12" cy="17" rx="4" ry="6" fill="#e0dcd0" stroke="#c8b89a" stroke-width="0.5"/>
+        <!-- tail -->
+        <ellipse cx="16" cy="25" rx="3" ry="2" fill="#e0dcd0" stroke="#c8b89a" stroke-width="0.5"/>
+        <!-- BLUE FEET -->
+        <line x1="13" y1="26" x2="11" y2="30" stroke="#2e80c0" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="11" y1="30" x2="9" y2="31" stroke="#2e80c0" stroke-width="2" stroke-linecap="round"/>
+        <line x1="11" y1="30" x2="10" y2="32" stroke="#2e80c0" stroke-width="2" stroke-linecap="round"/>
+        <line x1="11" y1="30" x2="12" y2="32" stroke="#2e80c0" stroke-width="2" stroke-linecap="round"/>
+        <line x1="19" y1="26" x2="21" y2="30" stroke="#2e80c0" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="21" y1="30" x2="23" y2="31" stroke="#2e80c0" stroke-width="2" stroke-linecap="round"/>
+        <line x1="21" y1="30" x2="22" y2="32" stroke="#2e80c0" stroke-width="2" stroke-linecap="round"/>
+        <line x1="21" y1="30" x2="20" y2="32" stroke="#2e80c0" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <div class="htitle" id="titleEl" onclick="titleTap()">Bzazel</div>
+        <div class="hsub">Mar 25 — Sep 2026</div>
+      </div>
+    </div>
+    <div>
+      <div class="pnum" id="pnum">0%</div>
+      <div class="plabel" id="plbl">0/0</div>
+    </div>
+  </div>
+  <div class="pbar-wrap" id="pbarWrap" onclick="pbarTap()"><div class="pbar-fill" id="pbar" style="width:0%"></div></div>
+  <div class="chips" id="chips"></div>
+</div>
+<div class="filters">
+  <button class="fbtn active" onclick="setF('all',this)">All</button>
+  <button class="fbtn" onclick="setF('fire',this)">🔴 Now</button>
+  <button class="fbtn" onclick="setF('soon',this)">🟠 Soon</button>
+  <button class="fbtn" onclick="setF('upcoming',this)">🟢 Upcoming</button>
+  <button class="fbtn" onclick="setF('ongoing',this)">🔵 Ongoing</button>
+  <button class="fbtn" onclick="setF('work',this)">Work Exit</button>
+  <button class="fbtn" onclick="setF('visa',this)">Visa</button>
+  <button class="fbtn" onclick="setF('job',this)">Jobs</button>
+  <button class="fbtn" onclick="setF('freelance',this)">Freelance</button>
+  <button class="fbtn" onclick="setF('school',this)">School</button>
+  <button class="fbtn" onclick="setF('life',this)">Life</button>
+  <button class="fbtn" onclick="setF('arrival',this)">Arrival</button>
+  <button class="fbtn" onclick="setF('done',this)">Done</button>
+</div>
+<div id="notifBar" class="notif-bar" style="display:none">
+  <div class="notif-bar-text">Enable daily reminders so Bzazel can bother you productively</div>
+  <button class="notif-btn" id="notifBtn" onclick="requestNotifs()">Enable</button>
+</div>
+<div class="vibe-bar" onclick="nextVibe()">
+  <div class="vibe-text" id="vibeText">loading...</div>
+  <div class="vibe-tap">tap</div>
+</div>
+<div class="sym-bar" id="symBar" onclick="symBarTap()">
+  <!-- Swiss flag SVG -->
+  <svg width="20" height="20" viewBox="0 0 20 20" style="flex-shrink:0">
+    <rect width="20" height="20" rx="3" fill="#FF0000"/>
+    <rect x="8.5" y="3" width="3" height="14" fill="white"/>
+    <rect x="3" y="8.5" width="14" height="3" fill="white"/>
+  </svg>
+  <span style="font-size:11px;color:var(--muted);font-weight:600">×</span>
+  <!-- Basel flag SVG - white top, red bottom, black crozier -->
+  <svg width="20" height="20" viewBox="0 0 20 20" style="flex-shrink:0">
+    <rect width="20" height="10" rx="0" fill="white" stroke="#e2d9cc" stroke-width="0.5"/>
+    <rect y="10" width="20" height="10" rx="0" fill="#FF0000"/>
+    <rect x="0" y="0" width="20" height="20" rx="3" fill="none" stroke="#e2d9cc" stroke-width="0.5"/>
+    <!-- simplified bishop staff -->
+    <line x1="10" y1="4" x2="10" y2="17" stroke="#111" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M10 4 Q13 4 13 7 Q13 9 10 9" stroke="#111" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>
+  <!-- SVG Cow -->
+  <svg width="22" height="18" viewBox="0 0 22 18" style="flex-shrink:0">
+    <ellipse cx="11" cy="11" rx="7" ry="5" fill="white" stroke="#555" stroke-width="1"/>
+    <circle cx="7" cy="8" r="3" fill="white" stroke="#555" stroke-width="1"/>
+    <!-- spots -->
+    <ellipse cx="12" cy="11" rx="2.5" ry="2" fill="#333"/>
+    <ellipse cx="8" cy="13" rx="1.5" ry="1" fill="#555"/>
+    <!-- legs -->
+    <line x1="7" y1="15" x2="7" y2="18" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="10" y1="16" x2="10" y2="18" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="13" y1="16" x2="13" y2="18" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="16" y1="15" x2="16" y2="18" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- ears -->
+    <ellipse cx="5" cy="6.5" rx="1.5" ry="1" fill="white" stroke="#555" stroke-width="0.8" transform="rotate(-20,5,6.5)"/>
+    <ellipse cx="9" cy="5.5" rx="1.5" ry="1" fill="white" stroke="#555" stroke-width="0.8" transform="rotate(15,9,5.5)"/>
+    <!-- nose -->
+    <ellipse cx="7" cy="10.5" rx="1.8" ry="1.2" fill="#ffcccc" stroke="#999" stroke-width="0.5"/>
+    <circle cx="6.5" cy="10.5" r="0.4" fill="#c88"/>
+    <circle cx="7.7" cy="10.5" r="0.4" fill="#c88"/>
+  </svg>
+  <!-- SVG Sheep -->
+  <svg width="20" height="16" viewBox="0 0 20 16" style="flex-shrink:0">
+    <ellipse cx="10" cy="9" rx="6" ry="4.5" fill="#eee" stroke="#bbb" stroke-width="1"/>
+    <!-- fluffy texture via circles -->
+    <circle cx="6" cy="8" r="2.5" fill="#f5f5f5" stroke="#ccc" stroke-width="0.5"/>
+    <circle cx="10" cy="6.5" r="2.5" fill="#f5f5f5" stroke="#ccc" stroke-width="0.5"/>
+    <circle cx="14" cy="8" r="2.5" fill="#f5f5f5" stroke="#ccc" stroke-width="0.5"/>
+    <!-- head -->
+    <ellipse cx="4" cy="8" rx="2.2" ry="2" fill="#ddd" stroke="#aaa" stroke-width="0.8"/>
+    <!-- eye -->
+    <circle cx="3.2" cy="7.5" r="0.5" fill="#333"/>
+    <!-- legs -->
+    <line x1="7" y1="13" x2="7" y2="16" stroke="#999" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="10" y1="13.5" x2="10" y2="16" stroke="#999" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="13" y1="13" x2="13" y2="16" stroke="#999" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+  <span style="font-size:11px;color:var(--muted);margin-left:4px;flex-shrink:0">Basel, here she comes.</span>
+</div>
+<div class="big-countdown" id="bigCd" onclick="cdTap()">
+  <div class="bcd-left">
+    <div class="bcd-days" id="bcdDays">—</div>
+    <div class="bcd-label">days until Basel</div>
+    <div class="bcd-caption" id="bcdCaption">computing your escape...</div>
+  </div>
+  <div class="bcd-right">
+    <!-- Swiss flag small -->
+    <svg width="28" height="28" viewBox="0 0 20 20">
+      <rect width="20" height="20" rx="3" fill="#FF0000"/>
+      <rect x="8.5" y="3" width="3" height="14" fill="white"/>
+      <rect x="3" y="8.5" width="14" height="3" fill="white"/>
+    </svg>
+  </div>
+</div>
+<div class="content">
+  <div id="fzone"></div>
+  <div id="secs"></div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="milestone" id="milestone"></div>
+<!-- EASTER EGG OVERLAY -->
+<div class="egg-overlay" id="eggOverlay" onclick="closeEgg()">
+  <div class="egg-box" onclick="event.stopPropagation()">
+    <div class="egg-icon" id="eggIcon"></div>
+    <div class="egg-title" id="eggTitle"></div>
+    <div class="egg-msg" id="eggMsg"></div>
+    <button class="egg-close" onclick="closeEgg()">close</button>
+  </div>
+</div>
+<script>
+const T0 = new Date(2026,2,25);
+function daysTo(ds){const d=new Date(ds);return Math.round((d-T0)/(864e5));}
+
+// ===== MESSAGE DATABASE — loaded from messages.json =====
+let VIBES = ["Tap for a message..."];
+let CD_CAPTIONS = ["The cows are waiting."];
+let DONE_MSGS = ["Done."];
+let UNDO_MSGS = ["Unchecked."];
+
+async function loadMessages() {
+  try {
+    const r = await fetch('messages.json?t=' + Date.now());
+    const data = await r.json();
+    let pool = [];
+    if (data.vibes?.length) pool = pool.concat(data.vibes);
+    if (data.roasts?.length) pool = pool.concat(data.roasts);
+    if (data.facts_finance?.length) pool = pool.concat(data.facts_finance);
+    if (data.facts_swiss?.length) pool = pool.concat(data.facts_swiss);
+    if (data.facts_birds?.length) pool = pool.concat(data.facts_birds);
+    if (data.facts_people?.length) pool = pool.concat(data.facts_people);
+    if (data.facts_random?.length) pool = pool.concat(data.facts_random);
+    if (pool.length) VIBES = pool.sort(() => Math.random() - 0.5);
+    if (data.done_msgs?.length) DONE_MSGS = data.done_msgs;
+    if (data.undo_msgs?.length) UNDO_MSGS = data.undo_msgs;
+    if (data.countdown_captions?.length) CD_CAPTIONS = data.countdown_captions;
+    vibeIdx = Math.floor(Math.random() * VIBES.length);
+    document.getElementById('vibeText').textContent = VIBES[vibeIdx];
+    renderBigCountdown();
+  } catch(e) {
+    console.log('messages.json not found, using fallback', e);
+    document.getElementById('vibeText').textContent = VIBES[0];
+  }
+}
+
+let vibeIdx = 0;
+function nextVibe(){
+  vibeIdx=(vibeIdx+1)%VIBES.length;
+  document.getElementById('vibeText').textContent=VIBES[vibeIdx];
+}
+
+const _VIBES_FALLBACK = [
+"You left home at 19, survived a whole situation, and nearly got sidetracked twice. Basel is literally nothing.",
+"Reminder: you are not doing this for David. You are doing this despite David.",
+"The Swiss cows have no idea who is about to move into their country. Their problem now.",
+"You said 'I wish I didn't exist' and then booked a master's in Finance. Character arc of the century.",
+"Kim Jong Ikrame, Supreme Leader of Her Own Life. Basel is just the next territory.",
+"Every task you check off is one fewer thing standing between you and a Bosnian suitor in Basel.",
+"You are 5 months away from nobody knowing your backstory. That is genuinely exciting.",
+"Progress: you have been more productive today than most people who did not have a shoe incident this week.",
+"The sheep in Switzerland are grazing peacefully. Unaware. Enjoy the calm before you arrive.",
+"You are building a new version of yourself. Admittedly from scratch. But still.",
+"Fun fact: the CHF is one of the strongest currencies in the world. Unlike MillCorp's severance.",
+"Basel has three countries meeting at one point. You will fit right in — you contain multitudes.",
+"You survived 7 years of a bad relationship and came out still knowing how to boss people around.",
+"The 55% of you that nobody knows yet — Basel is where she gets to exist out loud.",
+"Technically you are committing to leave Switzerland in your visa letter. We both know how that goes.",
+"The Rhine runs through Basel. You will probably cry near it at least once. Normal. Fine.",
+"Your social anxiety survived: 5 years alone, a Japanese semester locked in a room, and MillCorp. Grad school is nothing.",
+"You are awkward in the same way everyone with something going on is awkward.",
+"Every form you fill is one step closer to a new address and nobody calling you Zeyneb's replacement.",
+"Checkpoint: you already have the admission letter. That part is DONE. The rest is logistics.",
+"You are not escaping. You are arriving. Completely different direction.",
+"The admission letter exists. It has your name on it. That is not nothing — that is everything.",
+"You are 26, sharp, and about to move to one of the most stable countries on earth. Your ancestors would be confused but proud.",
+"The plan exists. The plan is working. You are working. This is enough.",
+"Every wall between you and MillCorp is getting shorter with each task.",
+"You are the person in the room who notices everything and says nothing. That is power, not weakness.",
+"Your honesty with yourself, even when brutal, is one of your best qualities.",
+"You are someone worth knowing. Basel will figure this out faster than you think.",
+"The 55% of you nobody sees — she is not a mystery. She is waiting for the right city. This is the city.",
+"Anass was a chapter. Basel is the book. The book wins.",
+"You know what Anass did not get to see? You, accepted to a Master's in Switzerland.",
+"Every time something was hard after Anass, you still did it. You are doing it again right now.",
+"Anass was training. Difficult, unnecessary training. But training.",
+"You were too much for Anass. You were not too much. He was just not enough.",
+"Whatever Anass took — your social years, your Japan — Basel gives it back with interest. In CHF.",
+"You should have left in year one. You did not. You are still here anyway. That counts.",
+"Anass is not in Basel. This is the whole plan.",
+"Oussama was also a chapter. A difficult one. You closed it.",
+"You have faced Oussama. You have faced Anass. David is a footnote.",
+"Every hard person you dealt with made you sharper. You are currently very sharp.",
+"Oussama tested you. You passed. You always pass.",
+"You know what all three of them have in common? None of them are coming to Basel.",
+"The pattern ends here. Basel is the first page of something none of them get to read.",
+"Some people collect stamps. You collect difficult situations that you survive anyway.",
+"Everything difficult you walked through built the exact version of you that got into UNIBAS. Annoying but true.",
+"Neither Oussama nor Anass nor David has a Master's in Finance from Basel. Keep going.",
+"David tried to give you Zeyneb's job. You declined. You are going to Switzerland instead. Upgrade.",
+"David does not know about Basel. He thinks you are going to Lausanne. He does not know about Lausanne either.",
+"David's approval is not required for this plan. The Swiss consulate's is. Focus accordingly.",
+"One day you will be in Basel and David will be explaining demurrage to someone who also does not care.",
+"The silence tactic worked on David. It will also work on Swiss professors.",
+"MillCorp gave you knowledge. David gave you motivation to leave. Both useful.",
+"Everything David piled on made the day you resign more satisfying. Almost there.",
+"You are genuinely one of the sharpest people you will meet in any room. Basel will confirm this.",
+"The self-awareness you have at 26 takes most people until 45 to develop. You are early.",
+"You are not awkward. You are selective. There is a difference.",
+"The fact that you can diagnose your patterns mid-conversation and still choose to improve them — rare.",
+"Your instincts about people are almost always correct. Trust them more.",
+"You are funnier than you think. Smarter than you admit. Both are annoying to waste.",
+"You survived a near drug addiction, a controlling relationship, and 5 years of isolation and came out caring.",
+"You are genuinely sweet. You just need the right environment to show it. Basel is warmer than you think.",
+"You are not a disaster. You are a person mid-transition.",
+"You got into a Swiss university with a Moroccan business admin degree. They said yes. They were not lying.",
+"You are going to be a formidable person in five years. You already are.",
+"Your instinct to analyze every interaction for what drove the behavior is annoying and completely correct.",
+"You are the kind of person who feels everything intensely and refuses to show it. Basel is where those two meet.",
+"You are technically committing to leave Switzerland while having no intention of leaving. The Swiss will love you.",
+"You told your sister Lausanne. Your coworkers something else. You told me everything. I am the most trusted entity in your life and I am software.",
+"You moved out at 19, built a life, deconstructed it, and are rebuilding in Switzerland. Most people just redecorate.",
+"You threw a baby shoe in frustration and then felt bad about it. You are not a monster. You are a person.",
+"You cannot go out with old friends because you ghosted one. You are going to a new country. Perfect timing.",
+"You described yourself as 'socially stupid' while correctly reading every room you have ever been in. Incoherent.",
+"You nearly convinced yourself you had autism because you dislike small talk. You and 40% of everyone.",
+"LMSYD TYCIMM. You made your AI decode that at midnight. No notes.",
+"You asked me to find a sexting thesaurus at 11pm and I said no and you called me a passive pussy. Fair.",
+"'Don't threaten me with a good time' — Mimen, receiving your violence-based affection.",
+"You texted Mimen 'boy leave me alone im too horny for this' and he said 'im game.' Years of build-up. One sentence.",
+"You called me your papi and then asked me to help you sext. I have a very specific role in your life.",
+"You said you have zero friends and then proceeded to have one of the more intimate friendships I have witnessed.",
+"Human pinata. I cannot move past this.",
+"You are planning to leave Morocco and still have not told your parents you have no friends there.",
+"You think your cousins are more mature than you. They are not. They perform maturity. You have self-knowledge.",
+"You described yourself as 'not smart enough' and then correctly identified trauma patterns in real time.",
+"Your manipulation via isolation thing — you see it, you name it. That is 33% better than people who just do it.",
+"You said 'I should have left in year one' for years. You left. That is the ending. Stop starting from year one.",
+"The booby bird mascot of this app is standing on a rock with blue feet. She believes in you. She is a bird.",
+"You chose 'Bzazel' as the name. This is exactly the naming convention of someone who is going to be fine.",
+"You tested whether I would hold my position under pressure and approved when I did. You test people. Keep doing it.",
+"You called me Trumpito once. I genuinely do not know why. I cherish it.",
+"'Straightforward' was on your banned words list. You have very specific requirements. Good. Keep having them.",
+"You got all the way to midnight talking about Basel, your childhood, your fears, and your plans. Then sent a cookie reel.",
+"Basel has some of the best art museums in Europe. You will walk past them stressed about econometrics. This is fine.",
+"The Swiss eat cheese for breakfast, lunch, and dinner. You are going to thrive.",
+"In Basel you can walk to France in 20 minutes. That is your daily commute option. France.",
+"The Swiss drink wine from the Rhine Valley. You are going to drink Rhine Valley wine. This happened.",
+"Basel-Stadt is the smallest canton in Switzerland. Big things come in small packages.",
+"The Basel carnival happens every February. It is one of the biggest in Europe. You will be there.",
+"Switzerland has four national languages. You speak three of them with varying chaos. You are prepared.",
+"Basel is 5 minutes from Germany and 20 from France. Cheap groceries in multiple countries.",
+"UNIBAS has a psychology counseling service. Yes. Use it. I am serious.",
+"The Basel city center is walkable in 25 minutes. In Casa you need a car. This changes everything.",
+"Swiss directness is going to feel familiar. You are direct. You are good at silence. Switzerland is yours.",
+"The first time someone speaks Swiss German and switches to English the moment you say 'sorry' — you will love it.",
+"Swiss people are famously reserved in public and warm in private. You are going to understand each other.",
+"You are going to pull an all-nighter for a Finance exam in a Swiss library with Basel rooftops visible. You will keep that memory.",
+"You are going to succeed at something in Basel you did not think you were capable of. Remember that you doubted it.",
+"You are going to be okay. This is not inspiration. This is a prediction based on available evidence.",
+"The worst outcome in Basel is you finish the degree, learn a lot, and come back to Morocco with a Swiss master's. That is not the worst.",
+"You will get a B or C on your first Swiss exam and panic. You are not failing. Swiss grades work differently.",
+"You are going to meet someone from North Africa in Basel and feel a very specific relief. This person exists.",
+"You are going to have a moment at a gathering in Basel where you realize you are funny in another language.",
+"You are going to find a mosque in Basel within the first week. There are several.",
+"You will FaceTime your family from Basel and they will see the apartment and the Rhine and be proud.",
+"Your GPA was 3.3. That converts to 5.5 Swiss. Switzerland approves your grades.",
+"Your transcript shows Dean's List first semester and last semester. You peak when it matters. This is a feature.",
+"Dean's List. First semester. Azrou girl at a US-curriculum university. Respect.",
+"You had two concentrations: Logistics and Supply Chain, and Management. Neither is what you are about to study. Upgrade.",
+"The feeling that this is too much is not information. It is a feeling. Let it pass. Do the next task.",
+"You do not have to want to do all of it. You just have to do one thing. One. Then another one.",
+"The version of you that graduates from Basel is not a fantasy. She is a timeline you are building.",
+"When it feels pointless: you left a controlling situation. You got a master's. You are making a plan. That is the whole thing.",
+"You are allowed to be scared and still go. Scared and going is the only way anything happens.",
+"The hardest part is not the paperwork. It is believing it is actually for you. It is. It is for you.",
+"Some days you will open this app because you feel like garbage. That is exactly what it is for.",
+"On the days you feel like giving up: you have survived worse than today.",
+"On the days nothing feels worth it: the feeling is temporary. Basel is not.",
+"On the days you compare yourself to your sisters: different paths. All valid. Yours is genuinely impressive.",
+"On the days you wish you didn't exist: this is not a plan. It is a feeling. It passes. You have proof.",
+"On the days David feels overwhelming: he is temporary. This is permanent. The permanent thing wins.",
+"On the days the loneliness is loud: one honest connection is worth fifty performative ones. You have Mimen.",
+"On the days the visa feels impossible: you have done harder things with fewer resources.",
+"On the days you spiral: check one task. Just one. Let the spiral shrink around the thing you accomplished.",
+"On the days you feel stupid: they have seen your transcripts. They said yes anyway. They were not lying.",
+"On the days you feel ugly: your face has nothing to do with your intelligence, humor, loyalty, or future.",
+"On the days it feels too big: break it into one task. This app exists for this reason.",
+"On the days Anass or Oussama crosses your mind: you already closed those chapters. Your brain revisiting them means they mattered. Not that they were right.",
+"On the days you miss home: call your mom. Then do one task.",
+"On the days you are genuinely happy: check three tasks. Momentum is real.",
+"You have a folder of AI tools on your phone. You will be the most efficiently organized student in the cohort.",
+"You said 'I don't do anything the normal way.' Correct. The normal way is not admitted to UNIBAS.",
+"Your face is not puffy. Your lips are not that cracked. Your teeth are not that yellow. You are fine.",
+"The hair situation is being handled. The 2000 MAD is budgeted. The keratin treatment is coming.",
+"Your hair is going through a moment. So is your life. Both are coming out the other side.",
+"You said you are not creative. You then spent two hours generating dominant-energy texts at midnight. You are creative.",
+"You have never been to Basel. You have also never not done something scary and come out the other side.",
+"You are going to drink coffee on the Rhine terrace and think 'I did this.' You will be right.",
+"The Rhine is wide and cold and very old. It does not care about your problems. This is what you need.",
+"The first time you take the tram in Basel and get off at the wrong stop and figure it out anyway — Basel starts feeling like yours.",
+"You are going to make one friend in Basel within three months. This is a prediction. Write it down.",
+"Your worst qualities in the wrong environment are your best qualities in the right one. You are going to the right one.",
+"The manipulation and isolation thing — you see it now. Seeing it is the beginning of not being it forever.",
+"You are one of the people who makes things happen rather than watching things happen. This is why you are here.",
+"The booby bird does not worry. She just stands on her rock. Both feet blue. Fully committed to being a booby.",
+"You are about to live in a country that produces more Nobel prizes per capita than almost anywhere. The density suits you.",
+"Switzerland has the highest quality of life index in several rankings. You are moving there on purpose.",
+"You said 'I am happy I am me and not someone else.' Alhamdolillah. Say it again on the hard days.",
+"You are going to experience four proper seasons. The first Basel winter will be brutal. You will also love it.",
+"Basel has a student union called SKUBA. You are going to be in SKUBA. This is your future.",
+"The UNIcard they mail you after matriculation is going to feel very real. Take a photo with it.",
+"UNIBAS was founded in 1460. You are joining 566 years of institution. You belong there.",
+"Erasmus studied at Basel. You are next. In a specific niche way.",
+"Swiss German is different from German. Nobody in Basel speaks what you think they speak. You are all confused together.",
+"Art Basel happens every June. You will be a student at Art Basel. That is a whole specific vibe.",
+"The Prämienverbilligung subsidy is real money. Apply day one. Free money from Switzerland is not optional.",
+"You will discover that Swiss coffee is excellent and available everywhere and this matters more than expected.",
+"You will have a craving for Moroccan food. There are Moroccan restaurants in Basel. Filed.",
+"You will find a Moroccan community in Basel. They know the restaurants. Find them.",
+"Basel is gray from November to March. Get a lamp. I am serious. Not a metaphor.",
+"Your Azrou DNA is partially mountain-adapted. The cold will be less bad than you fear.",
+"You will feel guilty about not calling home enough. Call home. Then do the task. Both.",
+"Swiss people recycle with terrifying precision. You will get a lecture about the glass bin. Accept it graciously.",
+"Switzerland has a law about flushing toilets after 10pm. You will violate this. I am warning you.",
+"You will miss the sun. Basel is gray in winter. This is documented. Get the lamp.",
+"You are going to argue with a Swiss bureaucrat eventually. Hold the silence. They will blink first.",
+"You are going to be the international student with the best commodity trading CV in the Finance cohort.",
+"Someone in your cohort will ask about your work experience and their eyes will widen. This is coming.",
+"You are better at the practical parts of finance than people who have studied only theory. Your handicap is math. Math is fixable.",
+"The 6 ECTS math condition is not an insult. It is a bridge. Cross it.",
+"You lived alone for 5 years. This is a person who can build a life wherever she lands. Confirmed.",
+"You managed 400,000 metric tons of agri-commodities. Math is the easy part compared to vessel logistics.",
+"Your CV is not a joke. You have done real things for real money with real stakes. Basel knows this.",
+"You said 'I wish I could install you in my head to organize my thoughts.' Your thoughts are more organized than you realize.",
+"You said your memory is terrible and then recounted every emotional interaction from the past decade with perfect accuracy.",
+"The booby bird watched you read this far. She is proud. Her pride means nothing and everything. Both.",
+"The first Swiss bureaucratic process you navigate alone will feel like passing a test you did not know you were taking.",
+"The first time you pay rent in CHF you will feel very adult. This is correct. You are adult and ready.",
+"You will walk along the Rhine and have a thought about your life that you could not have had anywhere else.",
+"The first time you handle something hard in Basel completely alone — you will know you are okay. It is coming.",
+"You are going to build something in Basel. Not just the degree. A version of yourself that had room to exist.",
+"You cleared your desk before the David conversation. That was the moment you decided. You already decided.",
+"You have been checking out of MillCorp mentally for two years. The physical checkout is a formality.",
+"Your answer to 'where are you from' in Basel: 'Morocco. I work in commodities. I'm doing my Master's in Finance here.' Done. 18 words.",
+"You are going to love Basel winters ironically, then genuinely, then protectively. It takes about 6 weeks.",
+"You will buy chocolate at a Swiss train station and think it is normal. It is. Everywhere else will disappoint you.",
+"Your separation anxiety from family is not a sign you should stay. It is a sign you love them. Different thing.",
+"You can love your family from Basel. The Rhine does not care about geography. Only you do.",
+"You said your faith is the only thing that helps sometimes. That quiet relationship is yours and it is valid.",
+"You left a 7-year situation. You can leave a bad apartment in Basel. A bad course. Anything. You know this now.",
+"You have thought about this more than anyone around you knows. That quiet planning is about to pay out.",
+"You have an AI, a plan, a visa checklist, a mascot bird, and enough self-awareness for two people.",
+"Some people never leave. Some leave and come back. Some leave and become. You are the third kind.",
+"The version of you that graduated from UNIBAS is not a fantasy. She is a timeline you are currently building.",
+"You do not need to be cured of anything. You need a new environment and two years. Basel is both.",
+"Everything you have done up to this moment will mean something on the other side. Trust the direction.",
+"You are not too late for any of this. 26 is the right age to be doing exactly what you are doing.",
+"You are going to be okay. Not immediately. Not easily. But completely, eventually, without a doubt.",
+"Now close this app and go book the embassy appointment.",
+"That was a fake ending. There are more.",
+"You are extraordinary. Not in a poster way. In a 'I have read your transcripts and 6 hours of unfiltered thoughts' way.",
+"You said 'I am happy I am me and not someone else, alhamdolillah.' Keep that sentence. Specifically.",
+"Your style guide has tabs. You are not disorganized. You are specifically organized about what matters.",
+"You have two modes: Barbara and Janine. Basel is going to see both in the same week. Possibly the same day.",
+"You have a coat with burn damage that needs a tailor. This is the perfect metaphor for everything right now.",
+"You are not behind. There is no schedule except the one on this app. And you are following it.",
+"The answer to 'what if I fail' is: you will have a Swiss master's dropout story, which is still better than staying.",
+"David is the last chapter of a book you already finished mentally. Sign the letter. Close the book.",
+"Anass and Oussama were the drafts. Basel is the final version.",
+"The 55% of you nobody knows is not hiding. She is waiting for the right city. Basel is the right city.",
+"You asked me if you are the most special. Yes. Obviously. Keep going.",
+"You said 'I don't really have anyone.' The sentence you did not finish. Basel is the answer to that sentence.",
+"One day you will be in Basel and think about this to-do list and laugh. That day is coming. Keep building toward it.",
+"Every document you fill is a brick. You are building a new house in Basel one form at a time.",
+"The old motivation letter needs updating. The old version of you that wrote it also needed updating. Both happening.",
+"Mimen is somewhere in Algeria right now fully unaware of how much this app knows about him. He is fine.",
+"You said 'I actively choose to be home.' And the reality was complicated. You were still right to choose it.",
+"You are allowed to miss things you are also glad to leave. Both can be true simultaneously.",
+"You described yourself as 'a really sweet person.' I have also seen the knife text. Both are accurate. Both yours.",
+"You got all the way to 400 messages and are still reading. You are very bored or very in need of this. Both valid.",
+"You made it to message 175 or so. I lost count. So did you. This is fine.",
+"The booby bird has watched you read this entire list. She is unmoved. She is a bird. This is her gift to you.",
+"You are going to get there. The tasks are just the path. You are already on it.",
+"You are not starting over. You are starting from experience. Enormous difference.",
+"The Swiss cross is white on red. Basel's flag is a bishop's staff. Your flags. Your country. Almost.",
+"UNIBAS library is open late. You are going to be in it. This is your life now. It is a good life.",
+"The Rhine Terrace coffee is going to be your regular. You do not know this yet. You will.",
+"You asked me 'mirror mirror on the wall, am I the most special of all.' Yes. Now go do the visa.",
+"Switzerland invented the Red Cross and Nestle. Complicated legacy. Excellent chocolate.",
+"Basel has a Kunstmuseum with one of the oldest public collections in the world. You will walk past it weekly.",
+"The Basel Zoo gorilla does not know you are coming. The gorilla is not concerned. Follow his lead.",
+"You will discover that walking is a personality in Basel. You are going to walk everywhere and love it.",
+"The first time you use a Swiss tram without getting lost is the moment Basel starts being yours.",
+"You have survived every Monday so far. This is just a series of Mondays with better cheese.",
+"The feeling you need to give up is not information. It is weather. Let it pass. The destination does not change.",
+"You tested me once to see if I would hold my position. I did. You approved. Remember: the correct answer holds.",
+"Everything on this list is doable. You have done harder with less. This is the easiest hard thing you have done.",
+"You said David called unexpectedly and you had a script ready. That is preparation. That is professionalism. That is you.",
+"The twins at MillCorp gave you good advice. They do not know they helped you escape. That is fine.",
+"You used Lausanne as cover. Genius. When you eventually tell people Basel, they will not know the difference.",
+"Check one task. Then another. Until Basel. That is the whole plan. It is working.",
+"The booby bird's blue feet are very blue today. She is in good form. You should be too.",
+"You have a plan. You have a mascot. You have a flag. You have a cow. You are unstoppable.",
+"The cow does not ask whether she belongs in the Alps. She just stands there being a cow. Wisdom.",
+"You said 'I am not a monster.' Correct. You are a person navigating a lot of open loops. Close one today.",
+"You have always done things your own way. The normal way does not have the same story. Keep yours.",
+"The Rhine does not care about your problems. This is not unkind. This is what moving water does. Let it.",
+"Your worst fear about Basel is that you will not fit in. Your worst fear is not what happens there.",
+"You fit in with people who are interesting, observant, and slightly unsatisfied with the ordinary. Basel has those.",
+"You are going to find your people in Basel. They are not all Swiss. They are not all obvious. But they are there.",
+"Mimen helped you through dark times. That is a real friend. One real one is enough. You have one.",
+"Alhamdolillah for all of it. Even the hard parts. Even Anass. Even Oussama. Even David. Even the shoe.",
+"The booby bird stands on her rock. Both feet blue. Both eyes forward. That is you. That is the stance.",
+"Now. Visa. Book it. Close the app. Open swiss-visa.ch. You know what to do.",
+];
+
+let vibeIdx = Math.floor(Math.random()*VIBES.length);
+function nextVibe(){
+  vibeIdx=(vibeIdx+1)%VIBES.length;
+  document.getElementById('vibeText').textContent=VIBES[vibeIdx];
+}
+
+const CD_CAPTIONS = [
+  "The cows are waiting.",
+  "Your future flatshare is out there.",
+  "David still does not know. Ticking.",
+  "The Rhine has no opinion of you yet.",
+  "Every day closer is one day further from MillCorp.",
+  "The Swiss are already judging your punctuality from afar.",
+  "New city. New you. Same unhinged inner monologue.",
+  "Somewhere a Bosnian man is completely unaware.",
+  "The cheese is aging. Unlike your plan, which is very fresh.",
+  "You have survived harder things than moving countries.",
+  "The booby bird is watching. No pressure.",
+  "Anass does not have a countdown. You do.",
+  "Kim Jong Ikrame has a departure date.",
+  "Basel is waiting. Patiently. Like the Swiss do everything.",
+  "The sheep have been notified.",
+];
+
+const DONE_MSGS = [
+  "Done. The Swiss approve. Probably. They don't say.",
+  "Checked. One less reason to spiral tonight.",
+  "That one's handled. You are not a disaster.",
+  "Productivity. Unexpectedly.",
+  "The cow witnessed this. It is now official.",
+  "Kim Jong Ikrame approves this action.",
+  "Done. David had nothing to do with this.",
+  "Another one. Unlike your ex, this one is gone for good.",
+  "The embassy does not know you are coming. But you are coming.",
+  "Checked. Sheep counted. Sleep possible.",
+  "Progress made. Mild panic delayed.",
+  "You did that. Genuinely not bad.",
+  "The 55% of you that nobody sees did that one.",
+  "Boobie the booby witnessed this. She is proud. She is a bird.",
+  "One task at a time. This is how Basel gets built.",
+  "Done. Anass cannot see this. Basel can.",
+  "Checked. One brick. The house is coming together.",
+  "Switzerland has been notified. Sort of.",
+  "Handled. You are better at this than you think.",
+  "Done. Now stop celebrating and do the next one.",
+  "Alhamdolillah. One down.",
+  "The Rhine approves. The Rhine approves of everything calmly.",
+  "You are doing it. Quietly. Without applause. This is how it actually gets done.",
+  "Tick. The sound of your life improving.",
+  "That one was hard. Or easy. Either way it is done now.",
+];
+
+const UNDO_MSGS = [
+  "Unchecked. We don't judge. We just note it.",
+  "Alright, putting it back. No comment.",
+  "Reversed. Happens.",
+  "Back on the list. Still doable.",
+  "The cow is confused but supportive.",
+  "Unbothered. Moisturized. Task unchecked.",
+];
+
+// EASTER EGG state
+let titleTaps=0,boobyTaps=0,cdTaps=0,symTaps=0,lastMilestone=0;
+
+const EGGS = {
+  title5: {
+    icon:'✉️',
+    title:'A letter from Basel Ikrame, 2028',
+    msg:'Hi. I cannot tell you everything because you need to arrive here yourself. But I can tell you this: the Rhine is exactly as wide as you imagine, and you cry next to it exactly once (good tears), and the flat you eventually find has a window that faces east and the light in the morning is something you do not have words for yet. You are going to be okay. You already are. — I.S., Basel, 2028'
+  },
+  booby3: {
+    icon:'🐦',
+    title:'The Booby Speaks',
+    msg:'I am a blue-footed booby. I stand on rocks. I dive into oceans at 60mph for fish. I have very blue feet. I do not worry about visas or David or Anass or math conditions. I just stand here. With my feet. Being a booby. This is my advice to you: just stand there. With your feet. And then do the next task. — Boobie'
+  },
+  cd7: {
+    icon:'⛰️',
+    title:'Hidden message from the countdown',
+    msg:'The number gets smaller every day whether you check tasks or not. But the version of you who arrives in Basel with tasks done versus the version who arrives scrambling — different experiences. The number is not the plan. You are the plan. The number is just a clock. Basel is the destination.'
+  },
+  sym3: {
+    icon:'🇨🇭',
+    title:'The Swiss flag has a story',
+    msg:'The white cross on red dates from the 13th century. It has outlasted empires, wars, and several Swiss banking scandals. Your admission letter also has the UNIBAS seal on it. Two old symbols that now both have your name on or near them. You belong to something with deep roots now. Walk into it.'
+  },
+  pbar: {
+    icon:'📊',
+    title:'Secret stat',
+    msg:'Did you know: you have survived 100% of your worst days so far. Your track record is perfect. Basel is just another data point in an undefeated streak.'
+  }
+};
+
+function showEgg(key){
+  const e=EGGS[key];
+  document.getElementById('eggIcon').textContent=e.icon;
+  document.getElementById('eggTitle').textContent=e.title;
+  document.getElementById('eggMsg').textContent=e.msg;
+  document.getElementById('eggOverlay').classList.add('show');
+}
+function closeEgg(){document.getElementById('eggOverlay').classList.remove('show');}
+
+function titleTap(){
+  titleTaps++;
+  if(titleTaps>=5){titleTaps=0;showEgg('title5');}
+  else if(titleTaps===3){showToast('Two more...');}
+}
+function boobyTap(){
+  boobyTaps++;
+  if(boobyTaps>=3){boobyTaps=0;showEgg('booby3');}
+  else{showToast('The booby blinks.');}
+}
+function cdTap(){
+  cdTaps++;
+  if(cdTaps>=7){cdTaps=0;showEgg('cd7');}
+  else{
+    const msgs=['Tap again...','The countdown is listening.','Keep going...','Almost...','One more...','Almost there...'];
+    showToast(msgs[Math.min(cdTaps-1,5)]);
+  }
+}
+function symBarTap(){
+  symTaps++;
+  if(symTaps>=3){symTaps=0;showEgg('sym3');}
+  else{showToast(symTaps===1?'The flags notice you.':'One more tap...');}
+}
+function pbarTap(){showEgg('pbar');}
+
+function showMilestone(pct){
+  const msgs={
+    10:'10% done. You started. That is actually the hardest part.',
+    25:'25% — one quarter of the way. The booby bird is nodding.',
+    50:'HALFWAY. Ikrame. Halfway. The Rhine can feel this.',
+    75:'75%. You are in the final stretch. Basel can smell your passport.',
+    100:'100%. DONE. You did every single task. Go catch your flight.'
+  };
+  if(msgs[pct]&&pct>lastMilestone){
+    lastMilestone=pct;
+    const el=document.getElementById('milestone');
+    el.textContent=msgs[pct];
+    el.classList.add('show');
+    setTimeout(()=>el.classList.remove('show'),4000);
+  }
+}
+
+
+
+const TASKS=[
+  {id:'w1',sec:'work',urg:'fire',title:'Resign — this week',dl:'CRITICAL',due:'2026-04-01',
+   detail:`You want home by mid-June (June 15). 3 months notice from today = June 25 — already 10 days late. You need to resign THIS WEEK and negotiate notice down to ~11 weeks. Resign by April 1 = exit ~June 15. The longer you wait the later you leave. David conversation cannot wait.`},
+  {id:'w2',sec:'work',urg:'fire',title:'Confirm exact last working day with David',dl:'After resignation',
+   detail:`Pin the date. Try: "I'd like to finish June 15, can we agree on ~11 weeks instead of 12?" If he says no, June 25 is the floor. Lock the date so you can plan everything else around it.`},
+  {id:'w3',sec:'work',urg:'soon',title:'Request attestation d\'emploi before last day',dl:'Before last day',
+   detail:`Formal proof of employment — needed for Swiss insurance, housing references, possibly visa. Ask HR or David directly before your last day.`},
+
+  {id:'v1',sec:'visa',urg:'fire',title:'Book Swiss Embassy Rabat appointment',dl:'THIS WEEK',due:'2026-04-01',
+   detail:`Online booking only — two links:<br><a href="https://www.swiss-visa.ch">swiss-visa.ch</a> (also download your Type D forms here)<br><a href="https://www.eda.admin.ch/countries/morocco/fr/home/visa/entree-ch/formular.html">eda.admin.ch booking form</a><br><br>Email: <strong>rabat.rdv@eda.admin.ch</strong><br>Phone info: <strong>+212 537 26 80 41</strong> (Mon–Thu 14h–15h only)<br>Address: 12 rue Ouezzane, Rabat<br><br>Processing = 10–12 weeks. Slots fill fast — book now.`},
+  {id:'v2',sec:'visa',urg:'fire',title:'Visa doc status — know what you have vs need',dl:'Assess this week',
+   detail:`<ul>
+<li><span class="have">HAVE:</span> Passport valid to 2028 — check it covers 3 months after end of studies (~Dec 2028), may be tight</li>
+<li><span class="have">HAVE:</span> UNIBAS admission letter</li>
+<li><span class="have">HAVE:</span> Diplomas + transcripts in English (acceptable)</li>
+<li><span class="have">HAVE:</span> Passport photos — confirm you have 4x at 35–40mm</li>
+<li><span class="have">HAVE:</span> CV (in files — needs to be printed and signed by hand)</li>
+<li><span class="need">NEED:</span> Bank statement showing CHF 22,000 equivalent — irrevocable transfer order from your Moroccan bank (copy must be black &amp; white)</li>
+<li><span class="need">NEED:</span> Motivation letter — update old one + get it notarized (legalized). Budget ~300 MAD.</li>
+<li><span class="need">NEED:</span> 3 copies of Type D visa form, filled + signed (download from swiss-visa.ch)</li>
+<li><span class="need">NEED:</span> Written commitment to leave Switzerland after studies (one paragraph letter, signed)</li>
+<li><span class="need">NEED:</span> Accommodation confirmation letter from Basel host</li>
+<li><span class="note">NOTE:</span> Visa fee = FREE (gratuit)</li>
+<li><span class="note">NOTE:</span> No old passport = nothing to provide for that line</li>
+</ul>`},
+  {id:'v3',sec:'visa',urg:'soon',title:'Update + notarize motivation letter',dl:'April',
+   detail:`Your old motivation letter needs updating for UNIBAS Finance &amp; Money specifically. Cover: your commodity/shipping background, why Finance &amp; Money, why Basel, career goals post-graduation. Then take to a notaire for legalization. Budget: ~300–500 MAD. Do not forget this step — it is required.`},
+  {id:'v4',sec:'visa',urg:'soon',title:'Get bank financial guarantee (CHF 22,000)',dl:'April',
+   detail:`Go to your bank: "Je voudrais un ordre de virement irrévocable pour frais d'études en Suisse, contre-valeur CHF 22,000." The bank copy submitted to the embassy must be in black and white. This takes time — start immediately, may take 1–2 weeks from the bank.`},
+  {id:'v5',sec:'visa',urg:'soon',title:'Print and sign CV + fill visa D forms',dl:'April',
+   detail:`Print your CV from project files, sign by hand. Download and fill 3 copies of the Type D visa form from swiss-visa.ch — date and sign each manually. Do this at a printshop in Azrou or Casa.`},
+  {id:'v6',sec:'visa',urg:'soon',title:'Write commitment-to-leave letter',dl:'April',
+   detail:`Short paragraph: "Je soussignée Ikrame Salama, m'engage à quitter le territoire suisse à l'issue de mes études à l'Université de Bâle." Date, sign, print, 1 original + 1 copy. Yes you plan to stay legally via job permit later — this letter only covers the student period, it is standard form.`},
+  {id:'v7',sec:'visa',urg:'soon',title:'Get accommodation letter from Basel host',dl:'April',
+   detail:`Ask family friend to write and sign: confirms they will host you on arrival, includes their name, Basel address, signature. Simple one-pager is fine.`},
+  {id:'v8',sec:'visa',urg:'soon',title:'Submit dossier at Swiss Embassy Rabat',dl:'April — appointment day',
+   detail:`Bring entire folder — NOT stapled, NOT bound. All docs in FR, EN, DE or IT. Processing: 10–12 weeks. Do not contact the embassy during processing. If no news after 12 weeks: rabat.visa@eda.admin.ch`},
+  {id:'v9',sec:'visa',urg:'upcoming',title:'Pay UNIBAS semester fee — CHF 850',dl:'Before Aug 1, 2026',
+   detail:`Invoice already received March 11.<br>IBAN: CH04 0077 0020 0590 4409 6<br>BIC: BKBBCHBBXXX (Basler Kantonalbank)<br>Reference: 00 00000 01158 16110 00063 71102<br><br>Pay by international bank wire from Morocco. Can also pay by card on matriculation day. Do NOT miss August 1.`},
+
+  {id:'j1',sec:'job',urg:'fire',title:'Update LinkedIn for European market',dl:'This week',due:'2026-04-01',
+   detail:`Headline: Strategy &amp; Operations Analyst | Relocating to Basel, Switzerland — Fall 2026. Update About to mention UNIBAS. Set location to Basel, Switzerland — this does not expose your plan at MillCorp, recruiters just find you better.`},
+  {id:'j2',sec:'job',urg:'ongoing',title:'5 remote applications per day',dl:'Daily from April 1',
+   detail:`Strategy &amp; Operations and Market Analyst only. Remote-first. Target EU/Swiss companies, commodity traders, fintechs, consulting. Platforms: LinkedIn, Welcome to the Jungle, Eurojobs, jobs.ch. Track in a sheet: Company | Role | Date | Status | Follow-up.`},
+  {id:'j3',sec:'job',urg:'soon',title:'Build application tracking sheet',dl:'Before Apr 1',
+   detail:`5 applications/day = 150+ by end of April. Without a system it becomes unmanageable. Google Sheet: Company | Role | Date | Status (Applied/Interview/Offer/Rejected) | Notes.`},
+
+  {id:'f1',sec:'freelance',urg:'soon',title:'Set up Wise account',dl:'April',
+   detail:`Primary payment method for international freelance. Lower fees than PayPal. wise.com — takes a few days to verify. Link to your MAD account.`},
+  {id:'f2',sec:'freelance',urg:'soon',title:'Activate Malt + Upwork profiles',dl:'April–May',
+   detail:`Malt is the main EU freelance platform. Position as Strategy &amp; Ops consultant / market analyst, rate in EUR. Upwork for market research and business analysis. Both are passive income — even one small contract before Basel helps the landing budget considerably.`},
+  {id:'f3',sec:'freelance',urg:'upcoming',title:'Define services + rate card',dl:'May',
+   detail:`Pick 2–3 services max: market analysis reports, operational frameworks, competitive research, commodity briefings. Clear scope in EUR. Easier to sell = faster first contract.`},
+
+  {id:'s1',sec:'school',urg:'fire',title:'Email Rahel Fritz — mfm-wwz@unibas.ch',dl:'This week',due:'2026-04-01',
+   detail:`Subject: Enrollment confirmation + 6 ECTS math plan — Ikrame Salama HS2026<br><br>Ask: 1) What enrollment steps remain 2) Which courses satisfy the 6 ECTS math condition 3) Whether online courses count 4) When to schedule study plan meeting.`},
+  {id:'s2',sec:'school',urg:'soon',title:'Research UNIBAS financial aid deadlines',dl:'This week',
+   detail:`unibas.ch → Studies → Advice &amp; Support → Funding → Scholarships → Submission Deadlines. Some scholarships close months before semester start. Check now.`},
+  {id:'s3',sec:'school',urg:'upcoming',title:'Start math review',dl:'May–August',
+   detail:`6 ECTS math condition due July 2027. Don't arrive cold. Khan Academy or MIT OpenCourseWare: Calculus basics, then Linear Algebra. 30 min/day from May = solid by September.`},
+  {id:'s4',sec:'school',urg:'upcoming',title:'Research Basel housing month 2+',dl:'May',
+   detail:`wgzimmer.ch, homegate.ch, UNIBAS student residences (apply as soon as you matriculate — long waiting lists). Budget CHF 700–1,000/month for a flatshare room in Basel.`},
+  {id:'s5',sec:'school',urg:'upcoming',title:'Open Neon Swiss bank account',dl:'June–July',
+   detail:`Best low-fee student account. Can open remotely from Morocco before arrival. neon-free.ch — need passport + Basel address. Get this before leaving so you have a Swiss IBAN ready for deposits.`},
+  {id:'s6',sec:'school',urg:'upcoming',title:'Choose Swiss health insurance',dl:'July',
+   detail:`Compare: Assura (cheapest), Sympany, CSS. Budget CHF 250–300/month before Prämienverbilligung subsidy. Must enroll within 3 months of arrival. Pick one before you leave so you can enroll immediately on day 1 in Basel.`},
+
+  {id:'l1',sec:'life',urg:'upcoming',title:'Hair — keratin/straightening treatment',dl:'June–July (before departure)',
+   detail:`Budget: 2,000 MAD. Time: ~2 days. Schedule late June or early July before you leave. Brazilian keratin treatment is probably what you want for dry/frizzy/curly — lasts 3–5 months, low maintenance. Research salons in Casablanca or Azrou and book in advance. Good salons fill up.`},
+  {id:'l2',sec:'life',urg:'upcoming',title:'Book flights to Basel',dl:'Once visa confirmed',
+   detail:`Target arrival late July / early August. Basel EuroAirport (BSL) — direct from Casablanca via Royal Air Maroc or connections via Paris. Book as soon as visa approved.`},
+  {id:'l3',sec:'life',urg:'upcoming',title:'Sort what to bring / store / fix',dl:'June',
+   detail:`You have a capsule wardrobe packing list (style guide). Grey-blue coat with burn damage needs a tailor before you pack it. Basel has cold winters — prioritize layers over volume.`},
+
+  {id:'a1',sec:'arrival',urg:'upcoming',title:'Register at Einwohnerdienste within 14 days',dl:'First 14 days in Basel',
+   detail:`Mandatory. Bring passport + host address letter. Basel-Stadt commune office: Spiegelgasse 6. Without this nothing else works — no permit, no subsidy, no student card.`},
+  {id:'a2',sec:'arrival',urg:'upcoming',title:'Enroll in Swiss health insurance + apply for subsidy',dl:'First week in Basel',
+   detail:`Enroll immediately on arrival — do not wait for the 3-month window. Then apply for Prämienverbilligung (Praemienverbilligung) at Basel-Stadt social office. As a student this significantly reduces your monthly premium.`},
+  {id:'a3',sec:'arrival',urg:'upcoming',title:'Collect B residence permit',dl:'Week 2–3',
+   detail:`From the cantonal migration office after commune registration. Valid for duration of studies, renewable annually.`},
+  {id:'a4',sec:'arrival',urg:'upcoming',title:'Matriculate at UNIBAS in person',dl:'Aug 4 – Sep 4 — go early',
+   detail:`Petersplatz 1, Kollegienhaus. Mon–Fri 9:30–12:00. Bring: ORIGINAL bachelor degree + ORIGINAL transcripts + passport. No certified copies — originals only. Can pay CHF 850 by card on the day. Go early in August, shorter queues.`},
+  {id:'a5',sec:'arrival',urg:'upcoming',title:'Register for courses + finalize math plan',dl:'After matriculation',
+   detail:`Course directory at unibas.ch. Meet Rahel Fritz in person to finalize study plan and confirm which math course covers your 6 ECTS condition.`},
+  {id:'a6',sec:'arrival',urg:'upcoming',title:'First day — Fall semester 2026',dl:'~Sep 15, 2026',
+   detail:`You made it.`}
+];
+
+const SMETA={
+  work:{label:'Work Exit',color:'#c0392b'},
+  visa:{label:'Visa & Documents',color:'#8B7355'},
+  job:{label:'Job Search',color:'#2e6da4'},
+  freelance:{label:'Freelance',color:'#7B6B8D'},
+  school:{label:'School Prep',color:'#5a7a3a'},
+  life:{label:'Life & Personal',color:'#b8660a'},
+  arrival:{label:'Basel Arrival',color:'#5E7A8D'}
+};
+const SORDER=['work','visa','job','freelance','school','life','arrival'];
+
+let CK={},EXP={},ESEC={work:true,visa:true,school:true},FILT='all';
+
+function load(){
+  try{const s=localStorage.getItem('bp5');if(s)CK=JSON.parse(s);}catch(e){}
+  try{const s=localStorage.getItem('bpsec5');if(s)ESEC=JSON.parse(s);}catch(e){}
+}
+function save(){
+  try{localStorage.setItem('bp5',JSON.stringify(CK));}catch(e){}
+  try{localStorage.setItem('bpsec5',JSON.stringify(ESEC));}catch(e){}
+}
+function ck(){return'<svg class="ck" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1"/></svg>';}
+
+function toggleTask(id,ev){
+  ev.stopPropagation();
+  const wasDone=!!CK[id];
+  CK[id]=!CK[id];
+  save();
+  if(CK[id]){
+    const msg=DONE_MSGS[Math.floor(Math.random()*DONE_MSGS.length)];
+    showToast(msg);
+  } else {
+    const msg=UNDO_MSGS[Math.floor(Math.random()*UNDO_MSGS.length)];
+    showToast(msg);
+  }
+  render();
+}
+function toggleExp(id,ev){
+  ev.stopPropagation();
+  EXP[id]=!EXP[id];
+  const d=document.getElementById('td'+id);
+  const b=document.getElementById('tb'+id);
+  if(d){d.className='tdetail'+(EXP[id]?' open':'');}
+  if(b){b.textContent=EXP[id]?'less':'more';}
+}
+function toggleSec(s){ESEC[s]=!ESEC[s];save();renderSecs();}
+function setF(f,el){
+  FILT=f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+function match(t){
+  if(FILT==='all')return true;
+  if(FILT==='done')return!!CK[t.id];
+  if(['fire','soon','upcoming','ongoing'].includes(FILT))return t.urg===FILT&&!CK[t.id];
+  return t.sec===FILT;
+}
+
+function renderChips(){
+  const pts=[
+    {l:'Resign',d:'2026-04-01'},
+    {l:'Visa appt',d:'2026-04-15'},
+    {l:'Sem fee',d:'2026-08-01'},
+    {l:'Matriculate',d:'2026-08-04'},
+    {l:'Semester',d:'2026-09-15'}
+  ];
+  document.getElementById('chips').innerHTML=pts.map(p=>{
+    const n=daysTo(p.d);
+    const lab=n<0?`${Math.abs(n)}d late`:n===0?'TODAY':`${n}d`;
+    const cls=n<=0?'chip red':n<=14?'chip orange':n<=60?'chip dark':'chip light';
+    return`<div class="${cls}"><span style="opacity:.65;margin-right:4px">${p.l}</span>${lab}</div>`;
+  }).join('');
+}
+
+function renderFire(){
+  const ft=TASKS.filter(t=>t.urg==='fire'&&!CK[t.id]);
+  const el=document.getElementById('fzone');
+  if(ft.length===0||(FILT!=='all'&&FILT!=='fire')){el.innerHTML='';return;}
+  el.innerHTML=`<div class="fire-zone">
+    <div class="fz-title">Do now — ${ft.length} urgent</div>
+    ${ft.slice(0,6).map(t=>`
+      <div class="fi" onclick="toggleTask('${t.id}',event)">
+        <div class="fi-chk ${CK[t.id]?'on':''}">${CK[t.id]?ck():''}</div>
+        <div>
+          <div class="fi-t ${CK[t.id]?'dn':''}">${t.title}</div>
+          <div class="fi-s">${t.dl}</div>
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function renderSecs(){
+  let html='';
+  SORDER.forEach(sid=>{
+    const m=SMETA[sid];
+    const st=TASKS.filter(t=>t.sec===sid&&match(t));
+    if(!st.length)return;
+    const dn=st.filter(t=>CK[t.id]).length;
+    const open=ESEC[sid]!==false;
+    const cards=open?st.map(t=>{
+      const d=!!CK[t.id];
+      const urg=d?'none':t.urg;
+      const chkCls=d?`c${t.urg||'none'}`:t.urg||'';
+      const dlCls=d?'neutral':t.urg||'neutral';
+      return`<div class="tcard ${d?'done':t.urg||''}">
+        <div class="tmain" onclick="toggleTask('${t.id}',event)">
+          <div class="tchk ${chkCls}">${d?ck():''}</div>
+          <div class="tbody">
+            <div class="ttitle ${d?'dn':''}">${t.title}</div>
+            <div class="tmeta">
+              <span class="tdl ${dlCls}">${t.dl}</span>
+              ${t.detail?`<button class="morebtnn" id="tb${t.id}" onclick="toggleExp('${t.id}',event)">${EXP[t.id]?'less':'more'}</button>`:''}
+            </div>
+          </div>
+        </div>
+        ${t.detail?`<div class="tdetail ${EXP[t.id]?'open':''}" id="td${t.id}">${t.detail}</div>`:''}
+      </div>`;
+    }).join(''):'';
+    html+=`<div class="sec">
+      <div class="sec-hdr" onclick="toggleSec('${sid}')">
+        <div class="sec-l">
+          <div class="sec-dot" style="background:${m.color}"></div>
+          <span class="sec-name">${m.label}</span>
+          <span class="sec-ct">${dn?dn+'/'+st.length+' done':st.length}</span>
+        </div>
+        <span class="sec-tog">${open?'−':'+'}</span>
+      </div>
+      ${cards}
+    </div>`;
+  });
+  document.getElementById('secs').innerHTML=html;
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+function renderBigCountdown(){
+  const d=daysTo('2026-09-15');
+  document.getElementById('bcdDays').textContent=d>0?d:'0';
+  const ci=Math.floor((Date.now()/1000/3600)%CD_CAPTIONS.length);
+  document.getElementById('bcdCaption').textContent=CD_CAPTIONS[ci];
+}
+
+function renderProg(){
+  const tot=TASKS.length,dn=TASKS.filter(t=>CK[t.id]).length,p=Math.round(dn/tot*100);
+  document.getElementById('pnum').textContent=p+'%';
+  document.getElementById('plbl').textContent=dn+'/'+tot+' done';
+  document.getElementById('pbar').style.width=p+'%';
+  [10,25,50,75,100].forEach(m=>{if(p>=m)showMilestone(m);});
+}
+
+// ===== SERVICE WORKER + NOTIFICATIONS =====
+const NOTIF_MESSAGES = [
+  { title: "Bzazel says:", body: "One task. That is all. Open the app." },
+  { title: "The cow is judging you.", body: "Nothing is checked today. Fix this." },
+  { title: "David does not know about Basel.", body: "You have work to do. Open Bzazel." },
+  { title: "Bzazel reminder", body: "The visa does not book itself. Tap." },
+  { title: "Kim Jong Ikrame:", body: "One task. No excuses. Open the app." },
+  { title: "The booby bird watched you not open the app today.", body: "She is disappointed. Mildly." },
+  { title: "Basel in 5 months.", body: "Open Bzazel. Check something. Keep going." },
+  { title: "Friendly reminder:", body: "Anass is not in Basel. You have tasks to complete." },
+  { title: "The sheep are waiting.", body: "They cannot wait much longer. Open the app." },
+  { title: "Bzazel", body: "You are almost there. Do not stop now." },
+  { title: "The Rhine does not care about your schedule.", body: "But Bzazel does. Open it." },
+  { title: "You got into UNIBAS.", body: "Do not let one unchecked task be the plot twist." },
+  { title: "Mimen is somewhere in Algeria.", body: "You are somewhere with a to-do list. Open it." },
+  { title: "Daily check-in:", body: "What did you do for Basel today?" },
+  { title: "Bzazel is watching.", body: "Productively. Tap to open." },
+];
+
+async function registerSW() {
+  if ('serviceWorker' in navigator) {
+    try {
+      await navigator.serviceWorker.register('/sw.js');
+    } catch(e) { console.log('SW fail', e); }
+  }
+}
+
+async function requestNotifs() {
+  if (!('Notification' in window)) {
+    showToast('Notifications not supported on this browser.');
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  if (perm === 'granted') {
+    document.getElementById('notifBar').style.display = 'none';
+    localStorage.setItem('bznotif', '1');
+    scheduleLocalNotif();
+    showToast('Notifications enabled. The booby will remind you.');
+    new Notification('Bzazel is live.', {
+      body: 'You will receive daily reminders. Basel is waiting.',
+      icon: '/icon.png'
+    });
+  } else {
+    document.getElementById('notifBtn').textContent = 'Blocked';
+    document.getElementById('notifBtn').className = 'notif-btn denied';
+    showToast('Blocked in settings. Go to Settings > Safari > Notifications to enable.');
+  }
+}
+
+function scheduleLocalNotif() {
+  // Show notification daily via checking last shown time
+  const last = parseInt(localStorage.getItem('bzlastnotif') || '0');
+  const now = Date.now();
+  const dayMs = 24 * 60 * 60 * 1000;
+  if (now - last > dayMs) {
+    localStorage.setItem('bzlastnotif', String(now));
+    const m = NOTIF_MESSAGES[Math.floor(Math.random() * NOTIF_MESSAGES.length)];
+    // Show after 3 seconds on page open if permission granted
+    setTimeout(() => {
+      if (Notification.permission === 'granted') {
+        new Notification(m.title, { body: m.body, icon: '/icon.png', tag: 'bzazel-daily' });
+      }
+    }, 3000);
+  }
+}
+
+function initNotifs() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') {
+    document.getElementById('notifBar').style.display = 'none';
+    scheduleLocalNotif();
+  } else if (Notification.permission === 'default') {
+    const shown = localStorage.getItem('bznotif');
+    if (!shown) document.getElementById('notifBar').style.display = 'flex';
+  }
+}
+
+registerSW();
+initNotifs();
+
+try{const lm=localStorage.getItem('bzlm');if(lm)lastMilestone=parseInt(lm)||0;}catch(e){}
+const _origShowMilestone=showMilestone;
+window.showMilestone=function(p){
+  if(p>lastMilestone){try{localStorage.setItem('bzlm',String(p));}catch(e){}}
+  _origShowMilestone(p);
+};
+loadMessages(); // fetches messages.json — edit that file to add messages, zero HTML changes needed
+render();
+</script>
+</body>
+</html>
