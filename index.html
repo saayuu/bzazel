@@ -796,17 +796,21 @@ function initNotifs() {
 registerSW();
 initNotifs();
 
-load(); // load saved checkbox state from localStorage
-renderBigCountdown(); // show countdown immediately, don't wait for messages fetch
-
-try{const lm=localStorage.getItem('bzlm');if(lm)lastMilestone=parseInt(lm)||0;}catch(e){}
-const _origShowMilestone=showMilestone;
-window.showMilestone=function(p){
-  if(p>lastMilestone){try{localStorage.setItem('bzlm',String(p));}catch(e){}}
-  _origShowMilestone(p);
-};
-loadMessages();
-render();
+window.addEventListener('DOMContentLoaded', function() {
+  load();
+  try {
+    renderBigCountdown();
+    render();
+  } catch(e) {
+    console.error('Bzazel render error:', e);
+    document.getElementById('secs').innerHTML = '<div style="padding:20px;color:#c0392b;font-size:13px">Error loading tasks: ' + e.message + '</div>';
+  }
+  try {
+    const lm = localStorage.getItem('bzlm');
+    if (lm) lastMilestone = parseInt(lm) || 0;
+  } catch(e) {}
+  loadMessages();
+});
 </script>
 </body>
 </html>
