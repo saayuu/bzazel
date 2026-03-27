@@ -471,92 +471,115 @@ function showMilestone(pct){
 
 
 
+const DETAILS={
+  'w1':"You want home by mid-June (June 15). 3 months notice from today = June 25 \u2014 already 10 days late. You need to resign THIS WEEK and negotiate notice down to ~11 weeks. Resign by April 1 = exit ~June 15. The longer you wait the later you leave. David conversation cannot wait.",
+  'w2':"Pin the date. Try: \"I'd like to finish June 15, can we agree on ~11 weeks instead of 12?\" If he says no, June 25 is the floor. Lock the date so you can plan everything else around it.",
+  'w3':"Formal proof of employment \u2014 needed for Swiss insurance, housing references, possibly visa. Ask HR or David directly before your last day.",
+  'v1':"Online booking only \u2014 two links:<br><a href=\"https://www.swiss-visa.ch\">swiss-visa.ch</a> (also download your Type D forms here)<br><a href=\"https://www.eda.admin.ch/countries/morocco/fr/home/visa/entree-ch/formular.html\">eda.admin.ch booking form</a><br><br>Email: <strong>rabat.rdv@eda.admin.ch</strong><br>Phone info: <strong>+212 537 26 80 41</strong> (Mon\u2013Thu 14h\u201315h only)<br>Address: 12 rue Ouezzane, Rabat<br><br>Processing = 10\u201312 weeks. Slots fill fast \u2014 book now.",
+  'v2':"<ul>\n<li><span class=\"have\">HAVE:</span> Passport valid to 2028 \u2014 check it covers 3 months after end of studies (~Dec 2028), may be tight</li>\n<li><span class=\"have\">HAVE:</span> UNIBAS admission letter</li>\n<li><span class=\"have\">HAVE:</span> Diplomas + transcripts in English (acceptable)</li>\n<li><span class=\"have\">HAVE:</span> Passport photos \u2014 confirm you have 4x at 35\u201340mm</li>\n<li><span class=\"have\">HAVE:</span> CV (in files \u2014 needs to be printed and signed by hand)</li>\n<li><span class=\"need\">NEED:</span> Bank statement showing CHF 22,000 equivalent \u2014 irrevocable transfer order from your Moroccan bank (copy must be black &amp; white)</li>\n<li><span class=\"need\">NEED:</span> Motivation letter \u2014 update old one + get it notarized (legalized). Budget ~300 MAD.</li>\n<li><span class=\"need\">NEED:</span> 3 copies of Type D visa form, filled + signed (download from swiss-visa.ch)</li>\n<li><span class=\"need\">NEED:</span> Written commitment to leave Switzerland after studies (one paragraph letter, signed)</li>\n<li><span class=\"need\">NEED:</span> Accommodation confirmation letter from Basel host</li>\n<li><span class=\"note\">NOTE:</span> Visa fee = FREE (gratuit)</li>\n<li><span class=\"note\">NOTE:</span> No old passport = nothing to provide for that line</li>\n</ul>",
+  'v3':"Your old motivation letter needs updating for UNIBAS Finance &amp; Money specifically. Cover: your commodity/shipping background, why Finance &amp; Money, why Basel, career goals post-graduation. Then take to a notaire for legalization. Budget: ~300\u2013500 MAD. Do not forget this step \u2014 it is required.",
+  'v4':"Go to your bank: \"Je voudrais un ordre de virement irr\u00e9vocable pour frais d'\u00e9tudes en Suisse, contre-valeur CHF 22,000.\" The bank copy submitted to the embassy must be in black and white. This takes time \u2014 start immediately, may take 1\u20132 weeks from the bank.",
+  'v5':"Print your CV from project files, sign by hand. Download and fill 3 copies of the Type D visa form from swiss-visa.ch \u2014 date and sign each manually. Do this at a printshop in Azrou or Casa.",
+  'v6':"Short paragraph: \"Je soussign\u00e9e Ikrame Salama, m'engage \u00e0 quitter le territoire suisse \u00e0 l'issue de mes \u00e9tudes \u00e0 l'Universit\u00e9 de B\u00e2le.\" Date, sign, print, 1 original + 1 copy. Yes you plan to stay legally via job permit later \u2014 this letter only covers the student period, it is standard form.",
+  'v7':"Ask family friend to write and sign: confirms they will host you on arrival, includes their name, Basel address, signature. Simple one-pager is fine.",
+  'v8':"Bring entire folder \u2014 NOT stapled, NOT bound. All docs in FR, EN, DE or IT. Processing: 10\u201312 weeks. Do not contact the embassy during processing. If no news after 12 weeks: rabat.visa@eda.admin.ch",
+  'v9':"Invoice already received March 11.<br>IBAN: CH04 0077 0020 0590 4409 6<br>BIC: BKBBCHBBXXX (Basler Kantonalbank)<br>Reference: 00 00000 01158 16110 00063 71102<br><br>Pay by international bank wire from Morocco. Can also pay by card on matriculation day. Do NOT miss August 1.",
+  'j1':"Headline: Strategy &amp; Operations Analyst | Relocating to Basel, Switzerland \u2014 Fall 2026. Update About to mention UNIBAS. Set location to Basel, Switzerland \u2014 this does not expose your plan at MillCorp, recruiters just find you better.",
+  'j2':"Strategy &amp; Operations and Market Analyst only. Remote-first. Target EU/Swiss companies, commodity traders, fintechs, consulting. Platforms: LinkedIn, Welcome to the Jungle, Eurojobs, jobs.ch. Track in a sheet: Company | Role | Date | Status | Follow-up.",
+  'j3':"5 applications/day = 150+ by end of April. Without a system it becomes unmanageable. Google Sheet: Company | Role | Date | Status (Applied/Interview/Offer/Rejected) | Notes.",
+  'f1':"Primary payment method for international freelance. Lower fees than PayPal. wise.com \u2014 takes a few days to verify. Link to your MAD account.",
+  'f2':"Malt is the main EU freelance platform. Position as Strategy &amp; Ops consultant / market analyst, rate in EUR. Upwork for market research and business analysis. Both are passive income \u2014 even one small contract before Basel helps the landing budget considerably.",
+  'f3':"Pick 2\u20133 services max: market analysis reports, operational frameworks, competitive research, commodity briefings. Clear scope in EUR. Easier to sell = faster first contract.",
+  's1':"Subject: Enrollment confirmation + 6 ECTS math plan \u2014 Ikrame Salama HS2026<br><br>Ask: 1) What enrollment steps remain 2) Which courses satisfy the 6 ECTS math condition 3) Whether online courses count 4) When to schedule study plan meeting.",
+  's2':"unibas.ch \u2192 Studies \u2192 Advice &amp; Support \u2192 Funding \u2192 Scholarships \u2192 Submission Deadlines. Some scholarships close months before semester start. Check now.",
+  's3':"6 ECTS math condition due July 2027. Don't arrive cold. Khan Academy or MIT OpenCourseWare: Calculus basics, then Linear Algebra. 30 min/day from May = solid by September.",
+  's4':"wgzimmer.ch, homegate.ch, UNIBAS student residences (apply as soon as you matriculate \u2014 long waiting lists). Budget CHF 700\u20131,000/month for a flatshare room in Basel.",
+  's5':"Best low-fee student account. Can open remotely from Morocco before arrival. neon-free.ch \u2014 need passport + Basel address. Get this before leaving so you have a Swiss IBAN ready for deposits.",
+  's6':"Compare: Assura (cheapest), Sympany, CSS. Budget CHF 250\u2013300/month before Pr\u00e4mienverbilligung subsidy. Must enroll within 3 months of arrival. Pick one before you leave so you can enroll immediately on day 1 in Basel.",
+  'l1':"Budget: 2,000 MAD. Time: ~2 days. Schedule late June or early July before you leave. Brazilian keratin treatment is probably what you want for dry/frizzy/curly \u2014 lasts 3\u20135 months, low maintenance. Research salons in Casablanca or Azrou and book in advance. Good salons fill up.",
+  'l2':"Target arrival late July / early August. Basel EuroAirport (BSL) \u2014 direct from Casablanca via Royal Air Maroc or connections via Paris. Book as soon as visa approved.",
+  'l3':"You have a capsule wardrobe packing list (style guide). Grey-blue coat with burn damage needs a tailor before you pack it. Basel has cold winters \u2014 prioritize layers over volume.",
+  'a1':"Mandatory. Bring passport + host address letter. Basel-Stadt commune office: Spiegelgasse 6. Without this nothing else works \u2014 no permit, no subsidy, no student card.",
+  'a2':"Enroll immediately on arrival \u2014 do not wait for the 3-month window. Then apply for Pr\u00e4mienverbilligung (Praemienverbilligung) at Basel-Stadt social office. As a student this significantly reduces your monthly premium.",
+  'a3':"From the cantonal migration office after commune registration. Valid for duration of studies, renewable annually.",
+  'a4':"Petersplatz 1, Kollegienhaus. Mon\u2013Fri 9:30\u201312:00. Bring: ORIGINAL bachelor degree + ORIGINAL transcripts + passport. No certified copies \u2014 originals only. Can pay CHF 850 by card on the day. Go early in August, shorter queues.",
+  'a5':"Course directory at unibas.ch. Meet Rahel Fritz in person to finalize study plan and confirm which math course covers your 6 ECTS condition.",
+  'a6':"You made it."
+};
+
 const TASKS=[
   {id:'w1',sec:'work',urg:'fire',title:'Resign — this week',dl:'CRITICAL',due:'2026-04-01',
-   detail:`You want home by mid-June (June 15). 3 months notice from today = June 25 — already 10 days late. You need to resign THIS WEEK and negotiate notice down to ~11 weeks. Resign by April 1 = exit ~June 15. The longer you wait the later you leave. David conversation cannot wait.`},
+   detail:DETAILS['w1']},
   {id:'w2',sec:'work',urg:'fire',title:'Confirm exact last working day with David',dl:'After resignation',
-   detail:`Pin the date. Try: "I'd like to finish June 15, can we agree on ~11 weeks instead of 12?" If he says no, June 25 is the floor. Lock the date so you can plan everything else around it.`},
+   detail:DETAILS['w2']},
   {id:'w3',sec:'work',urg:'soon',title:'Request attestation d\'emploi before last day',dl:'Before last day',
-   detail:`Formal proof of employment — needed for Swiss insurance, housing references, possibly visa. Ask HR or David directly before your last day.`},
+   detail:DETAILS['w3']},
 
   {id:'v1',sec:'visa',urg:'fire',title:'Book Swiss Embassy Rabat appointment',dl:'THIS WEEK',due:'2026-04-01',
-   detail:`Online booking only — two links:<br><a href="https://www.swiss-visa.ch">swiss-visa.ch</a> (also download your Type D forms here)<br><a href="https://www.eda.admin.ch/countries/morocco/fr/home/visa/entree-ch/formular.html">eda.admin.ch booking form</a><br><br>Email: <strong>rabat.rdv@eda.admin.ch</strong><br>Phone info: <strong>+212 537 26 80 41</strong> (Mon–Thu 14h–15h only)<br>Address: 12 rue Ouezzane, Rabat<br><br>Processing = 10–12 weeks. Slots fill fast — book now.`},
+   detail:DETAILS['v1']},
   {id:'v2',sec:'visa',urg:'fire',title:'Visa doc status — know what you have vs need',dl:'Assess this week',
-   detail:`<ul>
-<li><span class="have">HAVE:</span> Passport valid to 2028 — check it covers 3 months after end of studies (~Dec 2028), may be tight</li>
-<li><span class="have">HAVE:</span> UNIBAS admission letter</li>
-<li><span class="have">HAVE:</span> Diplomas + transcripts in English (acceptable)</li>
-<li><span class="have">HAVE:</span> Passport photos — confirm you have 4x at 35–40mm</li>
-<li><span class="have">HAVE:</span> CV (in files — needs to be printed and signed by hand)</li>
-<li><span class="need">NEED:</span> Bank statement showing CHF 22,000 equivalent — irrevocable transfer order from your Moroccan bank (copy must be black &amp; white)</li>
-<li><span class="need">NEED:</span> Motivation letter — update old one + get it notarized (legalized). Budget ~300 MAD.</li>
-<li><span class="need">NEED:</span> 3 copies of Type D visa form, filled + signed (download from swiss-visa.ch)</li>
-<li><span class="need">NEED:</span> Written commitment to leave Switzerland after studies (one paragraph letter, signed)</li>
-<li><span class="need">NEED:</span> Accommodation confirmation letter from Basel host</li>
-<li><span class="note">NOTE:</span> Visa fee = FREE (gratuit)</li>
-<li><span class="note">NOTE:</span> No old passport = nothing to provide for that line</li>
-</ul>`},
+   detail:DETAILS['v2']},
   {id:'v3',sec:'visa',urg:'soon',title:'Update + notarize motivation letter',dl:'April',
-   detail:`Your old motivation letter needs updating for UNIBAS Finance &amp; Money specifically. Cover: your commodity/shipping background, why Finance &amp; Money, why Basel, career goals post-graduation. Then take to a notaire for legalization. Budget: ~300–500 MAD. Do not forget this step — it is required.`},
+   detail:DETAILS['v3']},
   {id:'v4',sec:'visa',urg:'soon',title:'Get bank financial guarantee (CHF 22,000)',dl:'April',
-   detail:`Go to your bank: "Je voudrais un ordre de virement irrévocable pour frais d'études en Suisse, contre-valeur CHF 22,000." The bank copy submitted to the embassy must be in black and white. This takes time — start immediately, may take 1–2 weeks from the bank.`},
+   detail:DETAILS['v4']},
   {id:'v5',sec:'visa',urg:'soon',title:'Print and sign CV + fill visa D forms',dl:'April',
-   detail:`Print your CV from project files, sign by hand. Download and fill 3 copies of the Type D visa form from swiss-visa.ch — date and sign each manually. Do this at a printshop in Azrou or Casa.`},
+   detail:DETAILS['v5']},
   {id:'v6',sec:'visa',urg:'soon',title:'Write commitment-to-leave letter',dl:'April',
-   detail:`Short paragraph: "Je soussignée Ikrame Salama, m'engage à quitter le territoire suisse à l'issue de mes études à l'Université de Bâle." Date, sign, print, 1 original + 1 copy. Yes you plan to stay legally via job permit later — this letter only covers the student period, it is standard form.`},
+   detail:DETAILS['v6']},
   {id:'v7',sec:'visa',urg:'soon',title:'Get accommodation letter from Basel host',dl:'April',
-   detail:`Ask family friend to write and sign: confirms they will host you on arrival, includes their name, Basel address, signature. Simple one-pager is fine.`},
+   detail:DETAILS['v7']},
   {id:'v8',sec:'visa',urg:'soon',title:'Submit dossier at Swiss Embassy Rabat',dl:'April — appointment day',
-   detail:`Bring entire folder — NOT stapled, NOT bound. All docs in FR, EN, DE or IT. Processing: 10–12 weeks. Do not contact the embassy during processing. If no news after 12 weeks: rabat.visa@eda.admin.ch`},
+   detail:DETAILS['v8']},
   {id:'v9',sec:'visa',urg:'upcoming',title:'Pay UNIBAS semester fee — CHF 850',dl:'Before Aug 1, 2026',
-   detail:`Invoice already received March 11.<br>IBAN: CH04 0077 0020 0590 4409 6<br>BIC: BKBBCHBBXXX (Basler Kantonalbank)<br>Reference: 00 00000 01158 16110 00063 71102<br><br>Pay by international bank wire from Morocco. Can also pay by card on matriculation day. Do NOT miss August 1.`},
+   detail:DETAILS['v9']},
 
   {id:'j1',sec:'job',urg:'fire',title:'Update LinkedIn for European market',dl:'This week',due:'2026-04-01',
-   detail:`Headline: Strategy &amp; Operations Analyst | Relocating to Basel, Switzerland — Fall 2026. Update About to mention UNIBAS. Set location to Basel, Switzerland — this does not expose your plan at MillCorp, recruiters just find you better.`},
+   detail:DETAILS['j1']},
   {id:'j2',sec:'job',urg:'ongoing',title:'5 remote applications per day',dl:'Daily from April 1',
-   detail:`Strategy &amp; Operations and Market Analyst only. Remote-first. Target EU/Swiss companies, commodity traders, fintechs, consulting. Platforms: LinkedIn, Welcome to the Jungle, Eurojobs, jobs.ch. Track in a sheet: Company | Role | Date | Status | Follow-up.`},
+   detail:DETAILS['j2']},
   {id:'j3',sec:'job',urg:'soon',title:'Build application tracking sheet',dl:'Before Apr 1',
-   detail:`5 applications/day = 150+ by end of April. Without a system it becomes unmanageable. Google Sheet: Company | Role | Date | Status (Applied/Interview/Offer/Rejected) | Notes.`},
+   detail:DETAILS['j3']},
 
   {id:'f1',sec:'freelance',urg:'soon',title:'Set up Wise account',dl:'April',
-   detail:`Primary payment method for international freelance. Lower fees than PayPal. wise.com — takes a few days to verify. Link to your MAD account.`},
+   detail:DETAILS['f1']},
   {id:'f2',sec:'freelance',urg:'soon',title:'Activate Malt + Upwork profiles',dl:'April–May',
-   detail:`Malt is the main EU freelance platform. Position as Strategy &amp; Ops consultant / market analyst, rate in EUR. Upwork for market research and business analysis. Both are passive income — even one small contract before Basel helps the landing budget considerably.`},
+   detail:DETAILS['f2']},
   {id:'f3',sec:'freelance',urg:'upcoming',title:'Define services + rate card',dl:'May',
-   detail:`Pick 2–3 services max: market analysis reports, operational frameworks, competitive research, commodity briefings. Clear scope in EUR. Easier to sell = faster first contract.`},
+   detail:DETAILS['f3']},
 
   {id:'s1',sec:'school',urg:'fire',title:'Email Rahel Fritz — mfm-wwz@unibas.ch',dl:'This week',due:'2026-04-01',
-   detail:`Subject: Enrollment confirmation + 6 ECTS math plan — Ikrame Salama HS2026<br><br>Ask: 1) What enrollment steps remain 2) Which courses satisfy the 6 ECTS math condition 3) Whether online courses count 4) When to schedule study plan meeting.`},
+   detail:DETAILS['s1']},
   {id:'s2',sec:'school',urg:'soon',title:'Research UNIBAS financial aid deadlines',dl:'This week',
-   detail:`unibas.ch → Studies → Advice &amp; Support → Funding → Scholarships → Submission Deadlines. Some scholarships close months before semester start. Check now.`},
+   detail:DETAILS['s2']},
   {id:'s3',sec:'school',urg:'upcoming',title:'Start math review',dl:'May–August',
-   detail:`6 ECTS math condition due July 2027. Don't arrive cold. Khan Academy or MIT OpenCourseWare: Calculus basics, then Linear Algebra. 30 min/day from May = solid by September.`},
+   detail:DETAILS['s3']},
   {id:'s4',sec:'school',urg:'upcoming',title:'Research Basel housing month 2+',dl:'May',
-   detail:`wgzimmer.ch, homegate.ch, UNIBAS student residences (apply as soon as you matriculate — long waiting lists). Budget CHF 700–1,000/month for a flatshare room in Basel.`},
+   detail:DETAILS['s4']},
   {id:'s5',sec:'school',urg:'upcoming',title:'Open Neon Swiss bank account',dl:'June–July',
-   detail:`Best low-fee student account. Can open remotely from Morocco before arrival. neon-free.ch — need passport + Basel address. Get this before leaving so you have a Swiss IBAN ready for deposits.`},
+   detail:DETAILS['s5']},
   {id:'s6',sec:'school',urg:'upcoming',title:'Choose Swiss health insurance',dl:'July',
-   detail:`Compare: Assura (cheapest), Sympany, CSS. Budget CHF 250–300/month before Prämienverbilligung subsidy. Must enroll within 3 months of arrival. Pick one before you leave so you can enroll immediately on day 1 in Basel.`},
+   detail:DETAILS['s6']},
 
   {id:'l1',sec:'life',urg:'upcoming',title:'Hair — keratin/straightening treatment',dl:'June–July (before departure)',
-   detail:`Budget: 2,000 MAD. Time: ~2 days. Schedule late June or early July before you leave. Brazilian keratin treatment is probably what you want for dry/frizzy/curly — lasts 3–5 months, low maintenance. Research salons in Casablanca or Azrou and book in advance. Good salons fill up.`},
+   detail:DETAILS['l1']},
   {id:'l2',sec:'life',urg:'upcoming',title:'Book flights to Basel',dl:'Once visa confirmed',
-   detail:`Target arrival late July / early August. Basel EuroAirport (BSL) — direct from Casablanca via Royal Air Maroc or connections via Paris. Book as soon as visa approved.`},
+   detail:DETAILS['l2']},
   {id:'l3',sec:'life',urg:'upcoming',title:'Sort what to bring / store / fix',dl:'June',
-   detail:`You have a capsule wardrobe packing list (style guide). Grey-blue coat with burn damage needs a tailor before you pack it. Basel has cold winters — prioritize layers over volume.`},
+   detail:DETAILS['l3']},
 
   {id:'a1',sec:'arrival',urg:'upcoming',title:'Register at Einwohnerdienste within 14 days',dl:'First 14 days in Basel',
-   detail:`Mandatory. Bring passport + host address letter. Basel-Stadt commune office: Spiegelgasse 6. Without this nothing else works — no permit, no subsidy, no student card.`},
+   detail:DETAILS['a1']},
   {id:'a2',sec:'arrival',urg:'upcoming',title:'Enroll in Swiss health insurance + apply for subsidy',dl:'First week in Basel',
-   detail:`Enroll immediately on arrival — do not wait for the 3-month window. Then apply for Prämienverbilligung (Praemienverbilligung) at Basel-Stadt social office. As a student this significantly reduces your monthly premium.`},
+   detail:DETAILS['a2']},
   {id:'a3',sec:'arrival',urg:'upcoming',title:'Collect B residence permit',dl:'Week 2–3',
-   detail:`From the cantonal migration office after commune registration. Valid for duration of studies, renewable annually.`},
+   detail:DETAILS['a3']},
   {id:'a4',sec:'arrival',urg:'upcoming',title:'Matriculate at UNIBAS in person',dl:'Aug 4 – Sep 4 — go early',
-   detail:`Petersplatz 1, Kollegienhaus. Mon–Fri 9:30–12:00. Bring: ORIGINAL bachelor degree + ORIGINAL transcripts + passport. No certified copies — originals only. Can pay CHF 850 by card on the day. Go early in August, shorter queues.`},
+   detail:DETAILS['a4']},
   {id:'a5',sec:'arrival',urg:'upcoming',title:'Register for courses + finalize math plan',dl:'After matriculation',
-   detail:`Course directory at unibas.ch. Meet Rahel Fritz in person to finalize study plan and confirm which math course covers your 6 ECTS condition.`},
+   detail:DETAILS['a5']},
   {id:'a6',sec:'arrival',urg:'upcoming',title:'First day — Fall semester 2026',dl:'~Sep 15, 2026',
-   detail:`You made it.`}
+   detail:DETAILS['a6']}
 ];
 
 const SMETA={
@@ -792,6 +815,8 @@ function initNotifs() {
     if (!shown) document.getElementById('notifBar').style.display = 'flex';
   }
 }
+
+function render(){renderProg();renderChips();renderFire();renderSecs();}
 
 registerSW();
 initNotifs();
