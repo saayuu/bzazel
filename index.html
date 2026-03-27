@@ -796,21 +796,17 @@ function initNotifs() {
 registerSW();
 initNotifs();
 
-window.addEventListener('DOMContentLoaded', function() {
-  load();
-  try {
-    renderBigCountdown();
-    render();
-  } catch(e) {
-    console.error('Bzazel render error:', e);
-    document.getElementById('secs').innerHTML = '<div style="padding:20px;color:#c0392b;font-size:13px">Error loading tasks: ' + e.message + '</div>';
-  }
-  try {
-    const lm = localStorage.getItem('bzlm');
-    if (lm) lastMilestone = parseInt(lm) || 0;
-  } catch(e) {}
-  loadMessages();
-});
+// Script is at bottom of body so DOM is already ready — call directly
+load();
+try {
+  renderBigCountdown();
+  render();
+} catch(e) {
+  console.error('Bzazel render error:', e);
+  document.getElementById('secs').innerHTML = '<div style="padding:20px;color:#c0392b;font-size:13px">Error: ' + e.message + '</div>';
+}
+try { const lm=localStorage.getItem('bzlm'); if(lm) lastMilestone=parseInt(lm)||0; } catch(e) {}
+loadMessages();
 </script>
 </body>
 </html>
