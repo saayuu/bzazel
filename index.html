@@ -367,11 +367,12 @@ async function loadMessages() {
     if (data.facts_birds?.length) pool = pool.concat(data.facts_birds);
     if (data.facts_people?.length) pool = pool.concat(data.facts_people);
     if (data.facts_random?.length) pool = pool.concat(data.facts_random);
-    if (pool.length) VIBES = pool.sort(() => Math.random() - 0.5);
+    if (pool.length) VIBES = shuffle(pool);
     if (data.done_msgs?.length) DONE_MSGS = data.done_msgs;
     if (data.undo_msgs?.length) UNDO_MSGS = data.undo_msgs;
-    if (data.countdown_captions?.length) CD_CAPTIONS = data.countdown_captions;
-    vibeIdx = Math.floor(Math.random() * VIBES.length);
+    if (data.countdown_captions?.length) CD_CAPTIONS = shuffle(data.countdown_captions);
+    vibeIdx = 0;
+    cdCaptionIdx = 0;
     document.getElementById('vibeText').textContent = VIBES[vibeIdx];
     renderBigCountdown();
   } catch(e) {
@@ -381,9 +382,20 @@ async function loadMessages() {
 }
 
 let vibeIdx = 0;
-function nextVibe(){
-  vibeIdx=(vibeIdx+1)%VIBES.length;
-  document.getElementById('vibeText').textContent=VIBES[vibeIdx];
+let cdCaptionIdx = 0;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function nextVibe() {
+  vibeIdx = (vibeIdx + 1) % VIBES.length;
+  document.getElementById('vibeText').textContent = VIBES[vibeIdx];
 }
 
 
@@ -439,6 +451,8 @@ function boobyTap(){
 }
 function cdTap(){
   cdTaps++;
+  cdCaptionIdx++;
+  renderBigCountdown();
   if(cdTaps>=7){cdTaps=0;showEgg('cd7');}
   else{
     const msgs=['Tap again...','The countdown is listening.','Keep going...','Almost...','One more...','Almost there...'];
@@ -727,8 +741,9 @@ function showToast(msg){
 function renderBigCountdown(){
   const d=daysTo('2026-09-15');
   document.getElementById('bcdDays').textContent=d>0?d:'0';
-  const ci=Math.floor((Date.now()/1000/3600)%CD_CAPTIONS.length);
-  document.getElementById('bcdCaption').textContent=CD_CAPTIONS[ci];
+  if (CD_CAPTIONS.length) {
+    document.getElementById('bcdCaption').textContent=CD_CAPTIONS[cdCaptionIdx % CD_CAPTIONS.length];
+  }
 }
 
 function renderProg(){
